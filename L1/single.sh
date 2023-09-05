@@ -8,4 +8,4 @@
 #SBATCH -D ./ # stay in current working directory 
 
 
-./stream_triadSIMDO2 -min 512 -max 1e9 -align 1
+./stream_triadSIMDO2 -min 512 -max 1e8 -align 1 
