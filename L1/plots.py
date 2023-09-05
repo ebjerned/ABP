@@ -63,6 +63,14 @@ for filename in os.listdir(directory):
             #plt.axes((512, 1e8, 0, 256))
             plt.grid()
             plt.show()
+            plt.clf()
+        elif count == 10:
+            
+            plt.xscale("log")
+            plt.legend(["Non-aligned", "Aligned"])
+            #plt.axes((512, 1e8, 0, 256))
+            plt.grid()
+            plt.show()
             
             
             
