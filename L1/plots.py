@@ -33,6 +33,7 @@ for filename in os.listdir(directory):
             mem_512 = mem_vec.copy()
             size_512 = size_vec.copy()
             mupds_float = mupds_vec.copy()
+            
         if count == 4:
             plt.title("Block size")
             plt.legend(["1", "256", "512", "768", "1024"])
@@ -119,7 +120,16 @@ for filename in os.listdir(directory):
             plt.savefig("AlignLoc.png")
             plt.show()
             
+            plt.clf()
+            plt.xscale("log")
+            plt.title("Default CUDA perfomance, block size 512")
+            plt.plot(size_512, mem_512)
+            plt.ylabel("Memory throughput [GB/s]")
+            plt.xlabel("Vector size N [-]")
             
+            plt.grid()
+            plt.show()
+            plt.savefig("CUDA.png")
         
             
             
