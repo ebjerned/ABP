@@ -41,8 +41,8 @@ for filename in os.listdir(directory):
             plt.xlabel("Vector size N [-]")
             #plt.axes((512, 1e8, 0, 256))
             plt.grid()
-            plt.show()
             plt.savefig("Blocksize.png")
+            plt.show()
             
         elif count == 5:
             plt.clf()
@@ -56,8 +56,8 @@ for filename in os.listdir(directory):
             plt.legend(["Float", "Double"])
             #plt.axes((512, 1e8, 0, 256))
             plt.grid()
-            plt.show()
             plt.savefig("ThroughGB.png")
+            plt.show()
             plt.clf()
             plt.xscale("log")
             print(mupds_float)
@@ -69,8 +69,8 @@ for filename in os.listdir(directory):
             plt.ylabel("MUPD/s[s^-1]")
             plt.xlabel("Vector size N [-]")
             plt.grid()
-            plt.show()
             plt.savefig("ThroughMUPDS.png")
+            plt.show()
             
         elif count == 7:
             mem_O3 = mem_vec.copy()
@@ -81,8 +81,9 @@ for filename in os.listdir(directory):
             plt.ylabel("Memory throughput [GB/s]")
             plt.xlabel("Vector size N [-]")
             plt.grid()
-            plt.show()
             plt.savefig("Flags.png")
+
+            plt.show()
         elif count == 8:
             plt.clf()
             plt.title("Local AMD R3 3600 against UPPMAX")
@@ -94,8 +95,9 @@ for filename in os.listdir(directory):
             plt.xlabel("Vector size N [-]")
             #plt.axes((512, 1e8, 0, 256))
             plt.grid()
-            plt.show()
             plt.savefig("CPULocalUPP.png")
+            plt.show()
+            
             plt.clf()
         elif count == 10:
             
@@ -106,8 +108,9 @@ for filename in os.listdir(directory):
             plt.xlabel("Vector size N [-]")
             #plt.axes((512, 1e8, 0, 256))
             plt.grid()
-            plt.show()
             plt.savefig("AlignUPP.png")
+            plt.show()
+            
             plt.clf()
         elif count == 12:
             plt.xscale("log")
@@ -128,8 +131,9 @@ for filename in os.listdir(directory):
             plt.xlabel("Vector size N [-]")
             
             plt.grid()
-            plt.show()
             plt.savefig("CUDA.png")
+            plt.show()
+            
         
             
             
