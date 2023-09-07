@@ -1,4 +1,3 @@
-Intrinsics-based vectorization over 8 floats = 256 bits
 STREAM triad of size      512 : min/avg/max: 2.18954e-08 2.26271e-08 2.51552e-08 seconds or  23383.9 MUPD/s or  280.607 GB/s
 STREAM triad of size      568 : min/avg/max: 2.40201e-08 2.48594e-08 2.61518e-08 seconds or  23646.9 MUPD/s or  283.763 GB/s
 STREAM triad of size      632 : min/avg/max: 2.69663e-08 2.83503e-08 3.52295e-08 seconds or  23436.7 MUPD/s or   281.24 GB/s
