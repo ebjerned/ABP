@@ -86,7 +86,7 @@ for filename in os.listdir(directory):
             plt.show()
         elif count == 8:
             plt.clf()
-            plt.title("Local AMD R3 3600 against UPPMAX")
+            plt.title("Local AMD R5 3600 against UPPMAX")
             plt.xscale("log")
             plt.plot(size_vec, mem_vec)
             plt.plot(size_O3, mem_O3)
@@ -114,7 +114,7 @@ for filename in os.listdir(directory):
             plt.clf()
         elif count == 12:
             plt.xscale("log")
-            plt.title("Memory alignment -O2, AMD R3 3600")
+            plt.title("Memory alignment -O2, AMD R5 3600")
             plt.legend(["Non-aligned", "Aligned"])
             plt.ylabel("Memory throughput [GB/s]")
             plt.xlabel("Vector size N [-]")
