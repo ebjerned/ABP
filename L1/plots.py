@@ -53,7 +53,7 @@ for filename in os.listdir(directory):
             plt.plot(size_vec, mem_vec)
             plt.ylabel("Memory throughput [GB/s]")
             plt.xlabel("Vector size N [-]")
-            plt.legend(["Float", "Double"])
+            plt.legend(["Single", "Double"])
             #plt.axes((512, 1e8, 0, 256))
             plt.grid()
             plt.savefig("ThroughGB.png")
