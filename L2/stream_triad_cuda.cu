@@ -6,23 +6,8 @@
 #include <vector>
 
 
-const int block_size = 1024;
+const int block_size = 128;
 const int chunk_size = 1;
-
-__global__ void compute_triad(const int    N,
-                              const float  a,
-                              const float *x,
-                              const float *y,
-                              float *      z)
-{
-  const int idx_base = threadIdx.x + blockIdx.x * (blockDim.x * chunk_size);
-  for (unsigned int i = 0; i < chunk_size; ++i)
-    {
-      const int idx = idx_base + i * block_size;
-      if (idx < N)
-        z[idx] = a * x[idx] + y[idx];
-    }
-}
 
 __global__ void reduce0(int* g_idata, int* g_odata){
 	extern __shared__ int sdata[];
@@ -39,7 +24,7 @@ __global__ void reduce0(int* g_idata, int* g_odata){
 		__syncthreads();
 	}
 
-	if(tid==0) g_odata[blockIdx.x] = sdata[0];
+	if(tid==0) g_odata[blockIdx.x] = 10;//sdata[0];
 
 }
 
@@ -52,7 +37,7 @@ __global__ void set_vector(const int N, const int val, int *x)
     {
       const int idx = idx_base + i * block_size;
       if (idx < N)
-        x[idx] = val;
+        x[idx] = 1;
     }
 }
 
@@ -62,16 +47,16 @@ void benchmark_triad(const bool        align,
                      const std::size_t N,
                      const long long   repeat)
 {
-  int *v1, *v2, *v3;
+  int *v1, *v2;
   // allocate memory on the device
   cudaMalloc(&v1, N * sizeof(int));
-  cudaMalloc(&v2, N * sizeof(int));
+  cudaMalloc(&v2, sizeof(int));
  //cudaMalloc(&v3, N * sizeof(int));
 
   const unsigned int n_blocks = (N + block_size - 1) / block_size;
 
   set_vector<<<n_blocks, block_size>>>(N, 17, v1);
-  //set_vector<<<n_blocks, block_size>>>(N, 42, v2);
+  set_vector<<<n_blocks, block_size>>>(1, 0, v2);
   //set_vector<<<n_blocks, block_size>>>(N, 0, v3);
 
   std::vector<int> result_host(N);
@@ -102,10 +87,11 @@ void benchmark_triad(const bool        align,
     }
 
   // Copy the result back to the host
-  cudaMemcpy(result_host.data(), v2, N * sizeof(int), cudaMemcpyDeviceToHost);
-  if ((result_host[0] + result_host[N - 1]) != 526.f)
+  cudaMemcpy(result_host.data(), v2, sizeof(int), cudaMemcpyDeviceToHost);
+  std::cout << "Sum: " << result_host[0] << std::endl;
+  if ((result_host[0]) != 526.f)
     std::cout << "Error in computation, got "
-              << (result_host[0] + result_host[N - 1]) << " instead of 526"
+              << (result_host[0] )<< " instead of 526"
               << std::endl;
 
   // Free the memory on the device
