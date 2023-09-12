@@ -102,7 +102,7 @@ for filename in os.listdir(directory):
         elif count == 10:
             
             plt.xscale("log")
-            plt.title("Memory alignment -O2, UPPMAX")
+            plt.title("Memory alignment -O3, UPPMAX")
             plt.legend(["Non-aligned", "Aligned"])
             plt.ylabel("Memory throughput [GB/s]")
             plt.xlabel("Vector size N [-]")
@@ -114,7 +114,7 @@ for filename in os.listdir(directory):
             plt.clf()
         elif count == 12:
             plt.xscale("log")
-            plt.title("Memory alignment -O2, AMD R5 3600")
+            plt.title("Memory alignment -O3, AMD R5 3600")
             plt.legend(["Non-aligned", "Aligned"])
             plt.ylabel("Memory throughput [GB/s]")
             plt.xlabel("Vector size N [-]")
