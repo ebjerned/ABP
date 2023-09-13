@@ -5,6 +5,15 @@
 #include <iostream>
 #include <vector>
 
+#define AssertCuda(error_code) 									\
+if(error_code != cudaSuccess) 									\
+{ 																\
+	std::cout << "The cuda call in " << __FILE__ << " on line " \
+	<< __LINE__ << " resulted in the error '" 					\
+	<< cudaGetErrorString(error_code) << "'" << std::endl; 		\
+	std::abort();												\
+}														 		\
+
 
 const int block_size = 128;
 const int chunk_size = 1;
@@ -13,19 +22,20 @@ __global__ void reduce0(int* g_idata, int* g_odata){
 	extern __shared__ int sdata[];
 
 	unsigned int tid = threadIdx.x;
-	unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
+	unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
+	//printf("%d %d %d\n", tid, blockIdx.x, blockDim.x);
 	sdata[tid] = g_idata[i];
+
 	__syncthreads();
 
-	for(unsigned int s=1; s <blockDim.x; s*=2){
+	for(unsigned int s=1; s<blockDim.x; s*=2){
 		if(tid%(2*s)==0){
-			sdata[tid] += sdata[tid+s];
+			sdata[tid] += sdata[tid+s];	
 		}
 		__syncthreads();
 	}
 
-	if(tid==0) g_odata[blockIdx.x] = 10;//sdata[0];
-
+	if(tid==0) g_odata[blockIdx.x] = sdata[0];
 }
 
 
@@ -48,16 +58,19 @@ void benchmark_triad(const bool        align,
                      const long long   repeat)
 {
   int *v1, *v2;
+  cudaError_t error_code;
   // allocate memory on the device
-  cudaMalloc(&v1, N * sizeof(int));
-  cudaMalloc(&v2, sizeof(int));
- //cudaMalloc(&v3, N * sizeof(int));
+  error_code = cudaMalloc(&v1, N * sizeof(int));
+  AssertCuda(error_code);
+  error_code = cudaMalloc(&v2, N * sizeof(int));
+  AssertCuda(error_code);
 
   const unsigned int n_blocks = (N + block_size - 1) / block_size;
 
   set_vector<<<n_blocks, block_size>>>(N, 17, v1);
-  set_vector<<<n_blocks, block_size>>>(1, 0, v2);
-  //set_vector<<<n_blocks, block_size>>>(N, 0, v3);
+  //AssertCuda(error_code);
+  set_vector<<<n_blocks, block_size>>>(N, 0, v2);
+  //AssertCuda(error_code);
 
   std::vector<int> result_host(N);
 
@@ -70,8 +83,9 @@ void benchmark_triad(const bool        align,
       // type of t1: std::chrono::steady_clock::time_point
       const auto t1 = std::chrono::steady_clock::now();
 
-      for (unsigned int rep = 0; rep < n_repeat; ++rep)
-        reduce0<<<n_blocks, block_size>>>(v1, v2);
+      for (unsigned int rep = 0; rep < n_repeat; ++rep){
+        reduce0<<<n_blocks, block_size, N>>>(v1, v2); 
+	  }
 
       cudaDeviceSynchronize();
       // measure the time by taking the difference between the time point
@@ -87,13 +101,17 @@ void benchmark_triad(const bool        align,
     }
 
   // Copy the result back to the host
-  cudaMemcpy(result_host.data(), v2, sizeof(int), cudaMemcpyDeviceToHost);
+  error_code = cudaMemcpy(result_host.data(), v2, N*sizeof(int), cudaMemcpyDeviceToHost);
+  AssertCuda(error_code);
   std::cout << "Sum: " << result_host[0] << std::endl;
   if ((result_host[0]) != 526.f)
     std::cout << "Error in computation, got "
               << (result_host[0] )<< " instead of 526"
               << std::endl;
-
+  for(unsigned int i = 0; i < N; i++){
+  	std::cout << result_host[i] << " ";
+  }
+  std::cout << "Finished printout" << std::endl;
   // Free the memory on the device
   cudaFree(v1);
   cudaFree(v2);
