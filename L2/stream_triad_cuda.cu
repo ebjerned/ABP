@@ -15,10 +15,10 @@ if(error_code != cudaSuccess) 									\
 }														 		\
 
 
-const int block_size = 128;
+const int block_size = 32;
 const int chunk_size = 1;
 
-__global__ void reduce0(int* g_idata, int* g_odata){
+__global__ void reduce0(int* g_idata, int* g_odata, int* result){
 	extern __shared__ int sdata[];
 
 	unsigned int tid = threadIdx.x;
@@ -35,7 +35,10 @@ __global__ void reduce0(int* g_idata, int* g_odata){
 		__syncthreads();
 	}
 
-	if(tid==0) g_odata[blockIdx.x] = sdata[0];
+	if(tid==0)
+		atomicAdd(result, sdata[0]);
+//		g_odata[blockIdx.x] = sdata[0];
+	
 }
 
 
@@ -58,20 +61,23 @@ void benchmark_triad(const bool        align,
                      const long long   repeat)
 {
   int *v1, *v2;
+  int* result;
+  int* res;
   cudaError_t error_code;
   // allocate memory on the device
   error_code = cudaMalloc(&v1, N * sizeof(int));
   AssertCuda(error_code);
   error_code = cudaMalloc(&v2, N * sizeof(int));
   AssertCuda(error_code);
-
+  error_code = cudaMalloc(&result, sizeof(int));
+  AssertCuda(error_code);
   const unsigned int n_blocks = (N + block_size - 1) / block_size;
 
   set_vector<<<n_blocks, block_size>>>(N, 17, v1);
   //AssertCuda(error_code);
   set_vector<<<n_blocks, block_size>>>(N, 0, v2);
   //AssertCuda(error_code);
-
+  cudaMemset(res,0,sizeof(int));
   std::vector<int> result_host(N);
 
   const unsigned int           n_tests = 20;
@@ -84,7 +90,8 @@ void benchmark_triad(const bool        align,
       const auto t1 = std::chrono::steady_clock::now();
 
       for (unsigned int rep = 0; rep < n_repeat; ++rep){
-        reduce0<<<n_blocks, block_size, N>>>(v1, v2); 
+        reduce0<<<n_blocks, block_size, N>>>(v1, v2, result); 
+
 	  }
 
       cudaDeviceSynchronize();
@@ -101,9 +108,11 @@ void benchmark_triad(const bool        align,
     }
 
   // Copy the result back to the host
-  error_code = cudaMemcpy(result_host.data(), v2, N*sizeof(int), cudaMemcpyDeviceToHost);
+  error_code = cudaMemcpy(result_host.data(), v1, N*sizeof(int), cudaMemcpyDeviceToHost);
   AssertCuda(error_code);
-  std::cout << "Sum: " << result_host[0] << std::endl;
+  error_code = cudaMemcpy(res, result, sizeof(int), cudaMemcpyDeviceToHost);
+  AssertCuda(error_code);
+  std::cout << "Sum: " << *res << std::endl;
   if ((result_host[0]) != 526.f)
     std::cout << "Error in computation, got "
               << (result_host[0] )<< " instead of 526"
