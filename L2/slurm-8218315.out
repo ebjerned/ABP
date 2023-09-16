@@ -1,4 +1,0 @@
-Sum: 512
-Error in computation, got 1 instead of 526
-Finished printout
-STREAM triad of size      512 : min/avg/max: 4.99531e-06 5.04333e-06 5.76731e-06 seconds or  102.496 MUPD/s or  1.22995 GB/s

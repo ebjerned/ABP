@@ -18,8 +18,8 @@ if(error_code != cudaSuccess) 									\
 const int block_size = 32;
 const int chunk_size = 1;
 
-__global__ void reduce0(float* g_idata, float* g_odata, float* result){
-	extern __shared__ float sdata[];
+__global__ void reduce0(int* g_idata, int* result){
+	extern __shared__ int sdata[];
 
 	unsigned int tid = threadIdx.x;
 	unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
@@ -34,7 +34,6 @@ __global__ void reduce0(float* g_idata, float* g_odata, float* result){
 		}
 		__syncthreads();
 	}
-
 	if(tid==0)
 		atomicAdd(result, sdata[0]);
 //		g_odata[blockIdx.x] = sdata[0];
@@ -43,7 +42,7 @@ __global__ void reduce0(float* g_idata, float* g_odata, float* result){
 
 
 
-__global__ void set_vector(const int N, const float val, float *x)
+__global__ void set_vector(const int N, const int val, int *x)
 {
   const int idx_base = threadIdx.x + blockIdx.x * (blockDim.x * chunk_size);
   for (unsigned int i = 0; i < chunk_size; ++i)
@@ -60,27 +59,31 @@ void benchmark_triad(const bool        align,
                      const std::size_t N,
                      const long long   repeat)
 {
-  float *v1, *v2;
-  float* result;
-  float res = 0;
+  int *v1;
+  int* result;
+  int res = 0;
   cudaError_t error_code;
   // allocate memory on the device
-  error_code = cudaMalloc(&v1, N * sizeof(float));
+  error_code = cudaMalloc(&v1, N * sizeof(int));
   AssertCuda(error_code);
-  error_code = cudaMalloc(&v2, N * sizeof(float));
-  AssertCuda(error_code);
-  error_code = cudaMalloc(&result, sizeof(float));
+  //error_code = cudaMalloc(&v2, N * sizeof(int));
+  //AssertCuda(error_code);
+  error_code = cudaMalloc(&result, sizeof(int));
   AssertCuda(error_code);
   const unsigned int n_blocks = (N + block_size - 1) / block_size;
 
   set_vector<<<n_blocks, block_size>>>(N, 17, v1);
-  //AssertCuda(error_code);
+  error_code = cudaGetLastError();
+  AssertCuda(error_code);
+ /* 
   set_vector<<<n_blocks, block_size>>>(N, 0, v2);
-  //AssertCuda(error_code);
+  error_code = cudaGetLastError();
+  AssertCuda(error_code);
+  */
 
-  std::vector<float> result_host(N);
+  std::vector<int> result_host(N);
 
-  const unsigned int           n_tests = 20;
+  const unsigned            n_tests = 20;
   const unsigned long long int n_repeat =
     repeat > 0 ? repeat : std::max(1UL, 100000000U / N);
   double best = 1e10, worst = 0, avg = 0;
@@ -90,8 +93,12 @@ void benchmark_triad(const bool        align,
       const auto t1 = std::chrono::steady_clock::now();
 
       for (unsigned int rep = 0; rep < n_repeat; ++rep){
-	    cudaMemset(result,0,sizeof(float));
-        reduce0<<<n_blocks, block_size, N>>>(v1, v2, result); 
+	    error_code = cudaMemset(result,0,sizeof(int));
+		AssertCuda(error_code);
+        reduce0<<<n_blocks, block_size, N>>>(v1, result); 
+  		error_code = cudaGetLastError();
+  		AssertCuda(error_code);
+		
 
 	  }
 
@@ -109,12 +116,12 @@ void benchmark_triad(const bool        align,
     }
 
   // Copy the result back to the host
-  error_code = cudaMemcpy(result_host.data(), v1, N*sizeof(float), cudaMemcpyDeviceToHost);
+  error_code = cudaMemcpy(result_host.data(), v1, N*sizeof(int), cudaMemcpyDeviceToHost);
   AssertCuda(error_code);
-  error_code = cudaMemcpy(&res, result, sizeof(float), cudaMemcpyDeviceToHost);
+  error_code = cudaMemcpy(&res, result, sizeof(int), cudaMemcpyDeviceToHost);
   AssertCuda(error_code);
   std::cout << "Sum: " << res << std::endl;
-  if ((result_host[0]) != 526.f)
+  if (res != N)
     std::cout << "Error in computation, got "
               << (result_host[0] )<< " instead of 526"
               << std::endl;
@@ -124,15 +131,15 @@ void benchmark_triad(const bool        align,
   std::cout << "Finished printout" << std::endl;
   // Free the memory on the device
   cudaFree(v1);
-  cudaFree(v2);
+  //cudaFree(v2);
   //cudaFree(v3);
-
+  cudaFree(result);
   std::cout << "STREAM triad of size " << std::setw(8) << N
             << " : min/avg/max: " << std::setw(11) << best << " "
             << std::setw(11) << avg / n_tests << " " << std::setw(11) << worst
             << " seconds or " << std::setw(8) << 1e-6 * N / best
             << " MUPD/s or " << std::setw(8)
-            << 1e-9 * 3 * sizeof(float) * N / best << " GB/s" << std::endl;
+            << 1e-9 * 3 * sizeof(int) * N / best << " GB/s" << std::endl;
 }
 
 int main(int argc, char **argv)
@@ -184,3 +191,4 @@ int main(int argc, char **argv)
 
   return 0;
 }
+
