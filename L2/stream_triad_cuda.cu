@@ -15,15 +15,14 @@ if(error_code != cudaSuccess) 									\
 }														 		\
 
 
-const int block_size = 32;
+const int block_size =128;
 const int chunk_size = 1;
 
-__global__ void reduce0(int* g_idata, int* result){
-	extern __shared__ int sdata[];
+__global__ void reduce0(float* g_idata, float* result){
+	extern __shared__ float sdata[];
 
 	unsigned int tid = threadIdx.x;
 	unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
-	//printf("%d %d %d\n", tid, blockIdx.x, blockDim.x);
 	sdata[tid] = g_idata[i];
 
 	__syncthreads();
@@ -35,14 +34,76 @@ __global__ void reduce0(int* g_idata, int* result){
 		__syncthreads();
 	}
 	if(tid==0)
-		atomicAdd(result, sdata[0]);
-//		g_odata[blockIdx.x] = sdata[0];
-	
+		atomicAdd(result, sdata[0]);	
+}
+
+__global__ void reduce1(float* g_idata, float* result){
+	extern __shared__ float sdata[];
+
+	unsigned int tid = threadIdx.x;
+	unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
+	sdata[tid] = g_idata[i];
+
+	__syncthreads();
+
+	for(unsigned int s=1; s<blockDim.x; s*=2){
+		int index = 2*s*tid;
+		if(index < blockDim.x){
+			sdata[index] += sdata[index+s];	
+		}
+		__syncthreads();
+	}
+	if(tid==0){
+		atomicAdd(result, sdata[0]);	
+
+	}
 }
 
 
+__global__ void reduce2(float* g_idata, float* result){
+	extern __shared__ float sdata[];
 
-__global__ void set_vector(const int N, const int val, int *x)
+	unsigned int tid = threadIdx.x;
+	unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
+	sdata[tid] = g_idata[i];
+
+	__syncthreads();
+
+	for(unsigned int s=blockDim.x/2; s>0; s>>=1){
+		if(tid < s){
+			sdata[tid] += sdata[tid+s];
+		
+		}
+		__syncthreads();
+	}
+	if(tid==0){
+		atomicAdd(result, sdata[0]);	
+
+	}
+}
+
+
+__global__ void reduce3(float* g_idata, float* result){
+	extern __shared__ float sdata[];
+
+	unsigned int tid = threadIdx.x;
+	unsigned int i = blockIdx.x*(blockDim.x*2)+threadIdx.x;
+	sdata[tid] = g_idata[i]+g_idata[i+blockDim.x];
+	__syncthreads();
+
+	for(unsigned int s=blockDim.x/2; s>0; s>>=1){
+		if(tid < s){
+			sdata[tid] += sdata[tid+s];
+		
+		}
+		__syncthreads();
+	}
+	if(tid==0){
+		atomicAdd(result, sdata[0]);	
+
+	}
+}
+__global__ void set_vector(const int N, const float val, float *x)
 {
   const int idx_base = threadIdx.x + blockIdx.x * (blockDim.x * chunk_size);
   for (unsigned int i = 0; i < chunk_size; ++i)
@@ -59,16 +120,16 @@ void benchmark_triad(const bool        align,
                      const std::size_t N,
                      const long long   repeat)
 {
-  int *v1;
-  int* result;
-  int res = 0;
+  float *v1;
+  float* result;
+  float res = 0;
   cudaError_t error_code;
   // allocate memory on the device
-  error_code = cudaMalloc(&v1, N * sizeof(int));
+  error_code = cudaMalloc((void**) &v1, N * sizeof(float));
   AssertCuda(error_code);
   //error_code = cudaMalloc(&v2, N * sizeof(int));
   //AssertCuda(error_code);
-  error_code = cudaMalloc(&result, sizeof(int));
+  error_code = cudaMalloc((void**) &result, sizeof(float));
   AssertCuda(error_code);
   const unsigned int n_blocks = (N + block_size - 1) / block_size;
 
@@ -81,7 +142,7 @@ void benchmark_triad(const bool        align,
   AssertCuda(error_code);
   */
 
-  std::vector<int> result_host(N);
+  std::vector<float> result_host(N);
 
   const unsigned            n_tests = 20;
   const unsigned long long int n_repeat =
@@ -93,9 +154,11 @@ void benchmark_triad(const bool        align,
       const auto t1 = std::chrono::steady_clock::now();
 
       for (unsigned int rep = 0; rep < n_repeat; ++rep){
-	    error_code = cudaMemset(result,0,sizeof(int));
+	    std::cout << rep << std::endl;
+		error_code = cudaMemset(result,0,sizeof(float));
 		AssertCuda(error_code);
-        reduce0<<<n_blocks, block_size, N>>>(v1, result); 
+		cudaDeviceSynchronize();
+        reduce3<<<n_blocks, block_size, block_size*sizeof(float)>>>(v1, result); 
   		error_code = cudaGetLastError();
   		AssertCuda(error_code);
 		
@@ -116,9 +179,9 @@ void benchmark_triad(const bool        align,
     }
 
   // Copy the result back to the host
-  error_code = cudaMemcpy(result_host.data(), v1, N*sizeof(int), cudaMemcpyDeviceToHost);
+  error_code = cudaMemcpy(result_host.data(), v1, N*sizeof(float), cudaMemcpyDeviceToHost);
   AssertCuda(error_code);
-  error_code = cudaMemcpy(&res, result, sizeof(int), cudaMemcpyDeviceToHost);
+  error_code = cudaMemcpy(&res, result, sizeof(float), cudaMemcpyDeviceToHost);
   AssertCuda(error_code);
   std::cout << "Sum: " << res << std::endl;
   if (res != N)
@@ -139,7 +202,7 @@ void benchmark_triad(const bool        align,
             << std::setw(11) << avg / n_tests << " " << std::setw(11) << worst
             << " seconds or " << std::setw(8) << 1e-6 * N / best
             << " MUPD/s or " << std::setw(8)
-            << 1e-9 * 3 * sizeof(int) * N / best << " GB/s" << std::endl;
+            << 1e-9 * sizeof(float) * N / best << " GB/s" << std::endl;
 }
 
 int main(int argc, char **argv)
@@ -185,7 +248,8 @@ int main(int argc, char **argv)
   for (long n = N_min; n <= N_max; n = (1 + n * 1.1))
     {
       // round up to nearest multiple of 8
-      n = (n + 7) / 8 * 8;
+//      n = (n + 7) / 8 * 8;
+	  n = pow(2, ceil(log(n)/log(2)));
       benchmark_triad(align, n, repeat);
     }
 
