@@ -1,0 +1,1 @@
+/var/spool/slurmd/job8219437/slurm_script: line 10: 19752 Segmentation fault      (core dumped) ./matmul -min 64

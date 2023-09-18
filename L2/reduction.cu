@@ -15,11 +15,31 @@ if(error_code != cudaSuccess) 									\
 }														 		\
 
 
-const int block_size =128;
+const int block_size =64;
 const int chunk_size = 1;
 
+
+__device__ void warpReduce0(volatile float* sdata, int tid){
+	sdata[tid] += sdata[tid + 32];
+	sdata[tid] += sdata[tid + 16];
+	sdata[tid] += sdata[tid + 8];
+	sdata[tid] += sdata[tid + 4];
+	sdata[tid] += sdata[tid + 2];
+	sdata[tid] += sdata[tid + 1];
+}
+
+template <unsigned int blockSize>
+__device__ void warpReduce1(volatile float* sdata, int tid){
+	if(blockSize >= 64) sdata[tid] += sdata[tid + 32];
+	if(blockSize >= 32) sdata[tid] += sdata[tid + 16];
+	if(blockSize >= 16) sdata[tid] += sdata[tid + 8];
+	if(blockSize >= 8) sdata[tid] += sdata[tid + 4];
+	if(blockSize >= 4) sdata[tid] += sdata[tid + 2];
+	if(blockSize >= 2) sdata[tid] += sdata[tid + 1];
+}
+
 __global__ void reduce0(float* g_idata, float* result){
-	extern __shared__ float sdata[];
+	__shared__ float sdata[block_size];
 
 	unsigned int tid = threadIdx.x;
 	unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
@@ -38,7 +58,7 @@ __global__ void reduce0(float* g_idata, float* result){
 }
 
 __global__ void reduce1(float* g_idata, float* result){
-	extern __shared__ float sdata[];
+	__shared__ float sdata[block_size];
 
 	unsigned int tid = threadIdx.x;
 	unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
@@ -61,7 +81,7 @@ __global__ void reduce1(float* g_idata, float* result){
 
 
 __global__ void reduce2(float* g_idata, float* result){
-	extern __shared__ float sdata[];
+	__shared__ float sdata[block_size];
 
 	unsigned int tid = threadIdx.x;
 	unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
@@ -84,7 +104,8 @@ __global__ void reduce2(float* g_idata, float* result){
 
 
 __global__ void reduce3(float* g_idata, float* result){
-	extern __shared__ float sdata[];
+    // When calling, start kernel with half n_blocks
+	__shared__ float sdata[block_size];
 
 	unsigned int tid = threadIdx.x;
 	unsigned int i = blockIdx.x*(blockDim.x*2)+threadIdx.x;
@@ -103,6 +124,98 @@ __global__ void reduce3(float* g_idata, float* result){
 
 	}
 }
+
+__global__ void reduce4(float* g_idata, float* result){
+    // When calling, start kernel with half n_blocks
+	__shared__ float sdata[block_size];
+
+	unsigned int tid = threadIdx.x;
+	unsigned int i = blockIdx.x*(blockDim.x*2)+threadIdx.x;
+	sdata[tid] = g_idata[i]+g_idata[i+blockDim.x];
+	__syncthreads();
+
+	for(unsigned int s=blockDim.x/2; s>32; s>>=1){
+		if(tid < s){
+			sdata[tid] += sdata[tid+s];
+			__syncthreads();
+		}
+
+	}
+	if (tid < 32) warpReduce0(sdata, tid);
+
+	if(tid==0){
+		atomicAdd(result, sdata[0]);	
+
+	}
+}
+
+template <unsigned int blockSize>
+__global__ void reduce5(float* g_idata, float* result){
+    // When calling, start kernel with half n_blocks
+	__shared__ float sdata[block_size];
+
+	unsigned int tid = threadIdx.x;
+	unsigned int i = blockIdx.x*(blockDim.x*2)+threadIdx.x;
+	sdata[tid] = g_idata[i]+g_idata[i+blockDim.x];
+	__syncthreads();
+
+	if(blockSize >= 2048){
+		if(tid<1024){sdata[tid]+=sdata[tid+1024];}__syncthreads();}
+	if(blockSize >= 1024){
+		if(tid<512){sdata[tid]+=sdata[tid+512];}__syncthreads();}
+	if(blockSize >= 512){
+		if(tid<256){sdata[tid]+=sdata[tid+256];}__syncthreads();}
+	if(blockSize >= 256){
+		if(tid<128){sdata[tid]+=sdata[tid+128];}__syncthreads();}
+	if(blockSize >= 128){
+		if(tid<64){sdata[tid]+=sdata[tid+64];}__syncthreads();}
+
+	if (tid < 32) warpReduce1<blockSize>(sdata, tid);
+
+	if(tid==0){
+		atomicAdd(result, sdata[0]);	
+
+	}
+}
+
+template <unsigned int blockSize>
+__global__ void reduce6(float* g_idata, float* result){
+    // When calling, start kernel with half n_blocks
+	__shared__ float sdata[block_size];
+
+	unsigned int tid = threadIdx.x;
+	unsigned int i = blockIdx.x*(blockDim.x*2)+threadIdx.x;
+	unsigned int gridSize = blockSize*2*gridDim.x;
+	sdata[tid] = 0;
+	
+	while(i<4194304){
+		sdata[tid] += g_idata[i] + g_idata[i+blockSize];
+		i+=gridSize;	
+	}
+	__syncthreads();
+
+	if(blockSize >= 2048){
+		if(tid<1024){sdata[tid]+=sdata[tid+1024];}__syncthreads();}
+	if(blockSize >= 1024){
+		if(tid<512){sdata[tid]+=sdata[tid+512];}__syncthreads();}
+	if(blockSize >= 512){
+		if(tid<256){sdata[tid]+=sdata[tid+256];}__syncthreads();}
+	if(blockSize >= 256){
+		if(tid<128){sdata[tid]+=sdata[tid+128];}__syncthreads();}
+	if(blockSize >= 128){
+		if(tid<64){sdata[tid]+=sdata[tid+64];}__syncthreads();}
+
+	if (tid < 32) warpReduce1<blockSize>(sdata, tid);
+
+	
+	if(tid==0){
+		atomicAdd(result, sdata[0]);	
+
+	}
+}
+
+
+
 __global__ void set_vector(const int N, const float val, float *x)
 {
   const int idx_base = threadIdx.x + blockIdx.x * (blockDim.x * chunk_size);
@@ -154,11 +267,11 @@ void benchmark_triad(const bool        align,
       const auto t1 = std::chrono::steady_clock::now();
 
       for (unsigned int rep = 0; rep < n_repeat; ++rep){
-	    std::cout << rep << std::endl;
+	    
 		error_code = cudaMemset(result,0,sizeof(float));
 		AssertCuda(error_code);
 		cudaDeviceSynchronize();
-        reduce3<<<n_blocks, block_size, block_size*sizeof(float)>>>(v1, result); 
+        reduce6<block_size><<<n_blocks/2, block_size>>>(v1, result);
   		error_code = cudaGetLastError();
   		AssertCuda(error_code);
 		

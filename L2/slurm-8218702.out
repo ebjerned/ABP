@@ -1,2 +1,0 @@
-The cuda call in stream_triad_cuda.cu on line 99 resulted in the error 'invalid argument'
-/var/spool/slurmd/job8218702/slurm_script: line 10: 56855 Aborted                 (core dumped) ./stream_triad_cuda -min 4194304
