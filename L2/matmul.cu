@@ -43,9 +43,21 @@ __global__ void set_vector(const int N, const float val, float *x)
     {
       const int idx = idx_base + i * block_size;
       if (idx < N)
+        x[idx] = val;
+    }
+}
+
+__global__ void set_vector_rising(const int N, const float val, float *x)
+{
+  const int idx_base = threadIdx.x + blockIdx.x * (blockDim.x * chunk_size);
+  for (unsigned int i = 0; i < chunk_size; ++i)
+    {
+      const int idx = idx_base + i * block_size;
+      if (idx < N)
         x[idx] = val*(blockIdx.x*blockDim.x+threadIdx.x + threadIdx.y*gridDim.x*blockDim.x);
     }
 }
+
 
 
 __global__ void matmul(const float*A, const float*B, float* C, unsigned const int M, unsigned const int N){
@@ -66,6 +78,14 @@ __global__ void matmul(const float*A, const float*B, float* C, unsigned const in
 	C[i*N+j] = acc_sum;
 
 }
+
+__global__ void matvec(const float* A, const float* x, float* b, unsigned const int M, unsigned const int N){
+	b[threadIdx.x] = 0;
+	
+	for(unsigned int k = 0; k < N; ++k)
+		b[threadIdx.x] += A[N*k + threadIdx.x]*x[k];
+}
+
 
 
 // Run the actual benchmark
@@ -89,13 +109,13 @@ void benchmark_triad(const bool        align,
 
   const unsigned int n_blocks = (N + block_size - 1) / block_size;
 
-  set_vector<<<blockDimensions, block_size>>>(N*N, 1.f, v1);
+  set_vector_rising<<<blockDimensions, block_size>>>(N*N, 1.f, v1);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-  set_vector<<<blockDimensions, block_size>>>(N*N, 1.f, v2);
+  set_vector<<<blockDimensions, block_size>>>(N, 1.f, v2);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-  set_vector<<<blockDimensions, block_size>>>(N*N, 0.f, v3);
+  set_vector<<<blockDimensions, block_size>>>(N, 0.f, v3);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
 
@@ -112,7 +132,8 @@ void benchmark_triad(const bool        align,
       const auto t1 = std::chrono::steady_clock::now();
 
       for (unsigned int rep = 0; rep < n_repeat; ++rep)
-      matmul<<<blockDimensions, block_size>>>(v1, v2, v3, N, N);
+      //matmul<<<blockDimensions, block_size>>>(v1, v2, v3, N, N);
+      matvec<<<N, block_size>>>(v1, v2, v3, N, N);
 	  errorCode = cudaGetLastError();
   	  AssertCuda(errorCode);
       cudaDeviceSynchronize();
@@ -129,7 +150,7 @@ void benchmark_triad(const bool        align,
     }
 
   // Copy the result back to the host
-  errorCode = cudaMemcpy(result_host.data(), v3, N * N * sizeof(float), cudaMemcpyDeviceToHost);  
+  errorCode = cudaMemcpy(result_host.data(), v3, N * sizeof(float), cudaMemcpyDeviceToHost);  
   AssertCuda(errorCode);
 
 
@@ -137,7 +158,8 @@ void benchmark_triad(const bool        align,
   	std::cout << result_host[(i*N)%(N*N)+(i/N)] << " ";
 	if (i % N == N-1) std::cout << "" << std::endl;
   }*/
-
+  for(unsigned int i = 0; i < N; ++i)
+  	std::cout << result_host[i] << std::endl;
   //Not perfect check for correctness, works for 8 but not for 512 or larger
   if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
     std::cout << "Error in computation, got "
