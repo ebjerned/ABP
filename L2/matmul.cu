@@ -17,7 +17,7 @@ if(error_code != cudaSuccess) 	\
 
 
 
-const int block_size = 128;
+const int block_size = 64;
 const int chunk_size = 1;
 
 __global__ void compute_triad(const int    N,
@@ -80,10 +80,14 @@ __global__ void matmul(const float*A, const float*B, float* C, unsigned const in
 }
 
 __global__ void matvec(const float* A, const float* x, float* b, unsigned const int M, unsigned const int N){
-	b[threadIdx.x] = 0;
-	
+	int index = blockDim.x*blockIdx.x + threadIdx.x;
+	float sum = 0.f;
 	for(unsigned int k = 0; k < N; ++k)
-		b[threadIdx.x] += A[N*k + threadIdx.x]*x[k];
+		sum += A[N*index + k]*x[k];
+
+	b[index] = sum;
+//	__syncthreads();
+//	atomicAdd(&b[index],sum);
 }
 
 
@@ -100,16 +104,16 @@ void benchmark_triad(const bool        align,
 
   float *v1, *v2, *v3;
   // allocate memory on the device
-  errorCode =  cudaMalloc(&v1, N * N * sizeof(float));
+  errorCode = cudaMalloc(&v1, N * N * sizeof(float));
   AssertCuda(errorCode);
-  errorCode = cudaMalloc(&v2, N * N * sizeof(float));
+  errorCode = cudaMalloc(&v2, N * sizeof(float));
   AssertCuda(errorCode);
-  errorCode = cudaMalloc(&v3, N * N * sizeof(float));
+  errorCode = cudaMalloc(&v3, N * sizeof(float));
   AssertCuda(errorCode);
 
   const unsigned int n_blocks = (N + block_size - 1) / block_size;
 
-  set_vector_rising<<<blockDimensions, block_size>>>(N*N, 1.f, v1);
+  set_vector<<<blockDimensions, block_size>>>(N*N, 1.f, v1);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
   set_vector<<<blockDimensions, block_size>>>(N, 1.f, v2);
@@ -119,8 +123,9 @@ void benchmark_triad(const bool        align,
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
 
-  std::vector<float> result_host(N*N);
-
+  std::vector<float> result_host(N);
+  dim3 gridDim(ceil(N/block_size));
+  dim3 blockDim(block_size);
   const unsigned int           n_tests = 20;
   /*const unsigned long long int n_repeat =
     repeat > 0 ? repeat : std::max(1UL, 100000000U / N);*/
@@ -133,7 +138,7 @@ void benchmark_triad(const bool        align,
 
       for (unsigned int rep = 0; rep < n_repeat; ++rep)
       //matmul<<<blockDimensions, block_size>>>(v1, v2, v3, N, N);
-      matvec<<<N, block_size>>>(v1, v2, v3, N, N);
+      matvec<<<gridDim, blockDim>>>(v1, v2, v3, N, N);
 	  errorCode = cudaGetLastError();
   	  AssertCuda(errorCode);
       cudaDeviceSynchronize();
@@ -150,16 +155,17 @@ void benchmark_triad(const bool        align,
     }
 
   // Copy the result back to the host
-  errorCode = cudaMemcpy(result_host.data(), v3, N * sizeof(float), cudaMemcpyDeviceToHost);  
+  errorCode = cudaMemcpy(result_host.data(), v1, N*N * sizeof(float), cudaMemcpyDeviceToHost);  
   AssertCuda(errorCode);
 
 
-/* for(unsigned int i = 0; i <N*N;++i){
+ for(unsigned int i = 0; i <N*N;++i){
   	std::cout << result_host[(i*N)%(N*N)+(i/N)] << " ";
 	if (i % N == N-1) std::cout << "" << std::endl;
-  }*/
-  for(unsigned int i = 0; i < N; ++i)
-  	std::cout << result_host[i] << std::endl;
+  }
+  
+/*  for(unsigned int i = 0; i < N; ++i)
+  	std::cout << result_host[i] << std::endl;*/
   //Not perfect check for correctness, works for 8 but not for 512 or larger
   if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
     std::cout << "Error in computation, got "
