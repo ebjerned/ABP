@@ -17,7 +17,7 @@ if(error_code != cudaSuccess) 	\
 
 
 
-const int block_size = 128;
+const int block_size = 64;
 const int chunk_size = 1;
 
 __global__ void compute_triad(const int    N,
@@ -89,18 +89,18 @@ __global__ void matvec(const float* A, const float* x, float* b, unsigned const 
 }
 
 __global__ void matvec2(const float* A, const float* x, float*b, unsigned const int M, unsigned const int N){
-	int index = blockDim.x*blockIdx.x +threadIdx.x;
-	int row = blockIdx.y;
+	int col = blockDim.x*blockIdx.x +threadIdx.x;
+	int row = blockDim.y*blockIdx.y + threadIdx.y;
 	float sum = 0.f;
-	if((index >= N)|| (row >= M)) return;
+	b[row] = 0; //TODO: DO this outside of kernel
+	if((col >= N)|| (row >= M)) return;
 	int roof = (N+blockDim.x-1)/blockDim.x;
-	int k = 0;
-	//for(unsigned int k = 0; k < roof; ++k){
-			//if(index + blockDim.x*k >= N) return;
-			sum = A[row*N+index+(blockDim.x*k)]*x[index+(blockDim.x*k)];
-	//}
+	for(unsigned int k = 0; k < roof; ++k){
+			if((col + blockDim.x*k) >= N) return;
+			sum += A[row*N+col+(blockDim.x*k)]*x[col+(blockDim.x*k)];
+	}
 	__syncthreads();
-	atomicAdd(&b[row],(float)threadIdx.x);
+	atomicAdd(&b[row],sum);
 }
 
 // Run the actual benchmark
@@ -176,9 +176,9 @@ void benchmark_mat(const bool        align,
   	std::cout << result_host[(i*N)%(N*N)+(i/N)] << " ";
 	if (i % N == N-1) std::cout << "" << std::endl;
   }*/
-  
-  for(unsigned int i = 0; i < N; ++i)
-  	std::cout << result_host[i] << std::endl;
+  /*
+  for(unsigned int i = 0; i < M; ++i)
+  	std::cout << result_host[i] << std::endl;*/
   //Not perfect check for correctness, works for 8 but not for 512 or larger
   if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
     std::cout << "Error in computation, got "
@@ -193,7 +193,7 @@ void benchmark_mat(const bool        align,
   errorCode = cudaFree(v3);
   AssertCuda(errorCode);
 
-  std::cout << "STREAM triad of size " << std::setw(8) << N << " x " << M 
+  std::cout << "STREAM triad of size " << std::setw(8) << M << " x " << N
             << " : min/avg/max: " << std::setw(11) << best << " "
             << std::setw(11) << avg / n_tests << " " << std::setw(11) << worst
             << " seconds or " << std::setw(8) << 1e-9 * 2 * N * M * N / best
@@ -221,9 +221,9 @@ int main(int argc, char **argv)
     {
       std::string option = argv[l];
       if (option == "-M")
-        N = static_cast<long>(std::stod(argv[l + 1]));
-      else if (option == "-N")
         M = static_cast<long>(std::stod(argv[l + 1]));
+      else if (option == "-N")
+        N = static_cast<long>(std::stod(argv[l + 1]));
       else if (option == "-repeat")
         repeat = std::atoll(argv[l + 1]);
       else if (option == "-align")
