@@ -17,7 +17,7 @@ if(error_code != cudaSuccess) 	\
 
 
 
-const int block_size = 64;
+const int block_size = 128;
 const int chunk_size = 1;
 
 __global__ void compute_triad(const int    N,
@@ -86,15 +86,27 @@ __global__ void matvec(const float* A, const float* x, float* b, unsigned const 
 		sum += A[N*index + k]*x[k];
 
 	b[index] = sum;
-//	__syncthreads();
-//	atomicAdd(&b[index],sum);
 }
 
-
+__global__ void matvec2(const float* A, const float* x, float*b, unsigned const int M, unsigned const int N){
+	int index = blockDim.x*blockIdx.x +threadIdx.x;
+	int row = blockIdx.y;
+	float sum = 0.f;
+	if((index >= N)|| (row >= M)) return;
+	int roof = (N+blockDim.x-1)/blockDim.x;
+	int k = 0;
+	//for(unsigned int k = 0; k < roof; ++k){
+			//if(index + blockDim.x*k >= N) return;
+			sum = A[row*N+index+(blockDim.x*k)]*x[index+(blockDim.x*k)];
+	//}
+	__syncthreads();
+	atomicAdd(&b[row],(float)threadIdx.x);
+}
 
 // Run the actual benchmark
-void benchmark_triad(const bool        align,
-                     const std::size_t N,
+void benchmark_mat(const bool        align,
+                     const std::size_t M,
+					 const std::size_t N,
                      const long long   repeat)
 {
 
@@ -104,28 +116,28 @@ void benchmark_triad(const bool        align,
 
   float *v1, *v2, *v3;
   // allocate memory on the device
-  errorCode = cudaMalloc(&v1, N * N * sizeof(float));
+  errorCode = cudaMalloc(&v1, M * N * sizeof(float));
   AssertCuda(errorCode);
   errorCode = cudaMalloc(&v2, N * sizeof(float));
   AssertCuda(errorCode);
-  errorCode = cudaMalloc(&v3, N * sizeof(float));
+  errorCode = cudaMalloc(&v3, M * sizeof(float));
   AssertCuda(errorCode);
 
-  const unsigned int n_blocks = (N + block_size - 1) / block_size;
+  const unsigned int n_blocks = (M*N + block_size - 1) / block_size;
 
-  set_vector<<<blockDimensions, block_size>>>(N*N, 1.f, v1);
+  set_vector<<<n_blocks, block_size>>>(M*N, 1.f, v1);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
   set_vector<<<blockDimensions, block_size>>>(N, 1.f, v2);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-  set_vector<<<blockDimensions, block_size>>>(N, 0.f, v3);
+  set_vector<<<blockDimensions, block_size>>>(M, 0.f, v3);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
 
-  std::vector<float> result_host(N);
-  dim3 gridDim(ceil(N/block_size));
-  dim3 blockDim(block_size);
+  std::vector<float> result_host(M);
+  dim3 gridDim(1,M);
+  dim3 blockDim(block_size,1);
   const unsigned int           n_tests = 20;
   /*const unsigned long long int n_repeat =
     repeat > 0 ? repeat : std::max(1UL, 100000000U / N);*/
@@ -136,11 +148,12 @@ void benchmark_triad(const bool        align,
       // type of t1: std::chrono::steady_clock::time_point
       const auto t1 = std::chrono::steady_clock::now();
 
-      for (unsigned int rep = 0; rep < n_repeat; ++rep)
+      for (unsigned int rep = 0; rep < n_repeat; ++rep){
       //matmul<<<blockDimensions, block_size>>>(v1, v2, v3, N, N);
-      matvec<<<gridDim, blockDim>>>(v1, v2, v3, N, N);
-	  errorCode = cudaGetLastError();
-  	  AssertCuda(errorCode);
+      	matvec2<<<gridDim, blockDim>>>(v1, v2, v3, M, N);
+	    errorCode = cudaGetLastError();
+  	    AssertCuda(errorCode);
+	  }
       cudaDeviceSynchronize();
       // measure the time by taking the difference between the time point
       // before starting and now
@@ -155,17 +168,17 @@ void benchmark_triad(const bool        align,
     }
 
   // Copy the result back to the host
-  errorCode = cudaMemcpy(result_host.data(), v1, N*N * sizeof(float), cudaMemcpyDeviceToHost);  
+  errorCode = cudaMemcpy(result_host.data(), v3, M* sizeof(float), cudaMemcpyDeviceToHost);  
   AssertCuda(errorCode);
 
-
- for(unsigned int i = 0; i <N*N;++i){
+/*
+ for(unsigned int i = 0; i <N*M;++i){
   	std::cout << result_host[(i*N)%(N*N)+(i/N)] << " ";
 	if (i % N == N-1) std::cout << "" << std::endl;
-  }
+  }*/
   
-/*  for(unsigned int i = 0; i < N; ++i)
-  	std::cout << result_host[i] << std::endl;*/
+  for(unsigned int i = 0; i < N; ++i)
+  	std::cout << result_host[i] << std::endl;
   //Not perfect check for correctness, works for 8 but not for 512 or larger
   if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
     std::cout << "Error in computation, got "
@@ -180,12 +193,12 @@ void benchmark_triad(const bool        align,
   errorCode = cudaFree(v3);
   AssertCuda(errorCode);
 
-  std::cout << "STREAM triad of size " << std::setw(8) << N
+  std::cout << "STREAM triad of size " << std::setw(8) << N << " x " << M 
             << " : min/avg/max: " << std::setw(11) << best << " "
             << std::setw(11) << avg / n_tests << " " << std::setw(11) << worst
-            << " seconds or " << std::setw(8) << 1e-9 * 2 * N * N * N / best
+            << " seconds or " << std::setw(8) << 1e-9 * 2 * N * M * N / best
             << " GFLOPS/s or " << std::setw(8)
-            << 1e-9 * 3 * sizeof(float) * N / best << " GB/s" << std::endl;
+            << 1e-9 * sizeof(float) * N*(M+2) / best << " GB/s" << std::endl; 
 }
 
 int main(int argc, char **argv)
@@ -199,18 +212,18 @@ int main(int argc, char **argv)
       std::abort();
     }
 
-  long N_min  = 8;
-  long N_max  = -1;
+  long M  = 8;
+  long N  = M;
   bool align  = false;
   long repeat = -1;
   // parse from the command line
   for (int l = 1; l < argc; l += 2)
     {
       std::string option = argv[l];
-      if (option == "-min")
-        N_min = static_cast<long>(std::stod(argv[l + 1]));
-      else if (option == "-max")
-        N_max = static_cast<long>(std::stod(argv[l + 1]));
+      if (option == "-M")
+        N = static_cast<long>(std::stod(argv[l + 1]));
+      else if (option == "-N")
+        M = static_cast<long>(std::stod(argv[l + 1]));
       else if (option == "-repeat")
         repeat = std::atoll(argv[l + 1]);
       else if (option == "-align")
@@ -218,22 +231,8 @@ int main(int argc, char **argv)
       else
         std::cout << "Unknown option " << option << " - ignored!" << std::endl;
     }
-  if (N_min < 1)
-    {
-      std::cout << "Expected positive size for min argument, got " << N_min
-                << std::endl;
-      return 0;
-    }
 
-  if (N_max < N_min)
-    N_max = N_min;
-
-  for (long n = N_min; n <= N_max; n = (1 + n * 1.1))
-    {
-      // round up to nearest multiple of 8
-      n = (n + 7) / 8 * 8;
-      benchmark_triad(align, n, repeat);
-    }
+  benchmark_mat(align, M, N, repeat);
 
   return 0;
 }
