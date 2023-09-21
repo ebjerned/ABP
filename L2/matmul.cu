@@ -96,46 +96,68 @@ __global__ void matvec2(const float* A, const float* x, float*b, unsigned const 
 	if((col >= N)|| (row >= M)) return;
 	int roof = (N+blockDim.x-1)/blockDim.x;
 	for(unsigned int k = 0; k < roof; ++k){
-			if((col + blockDim.x*k) >= N) return;
+			if((col + blockDim.x*k) >= N) break; // TODO: This can be moved to when calculating roof
 			sum += A[row*N+col+(blockDim.x*k)]*x[col+(blockDim.x*k)];
 	}
 	__syncthreads();
 	atomicAdd(&b[row],sum);
 }
 
+__global__ void matmat(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const K){
+	int col = blockDim.x*blockIdx.x + threadIdx.x;
+	int row = blockDim.y*blockIdx.y + threadIdx.y;
+	float sum = 0.f;
+	
+	if((col >= N)|| (row >= M)) return;
+	int roof = (N+blockDim.x-1)/blockDim.x;
+	for(unsigned int currentCol = 0; currentCol < K; ++currentCol){
+		sum = 0.f;
+		for(unsigned int k = 0; k < roof; ++k){
+			if((col + blockDim.x*k) >= N) break;
+			sum += A[row*N+col+(blockDim.x*k)]*B[currentCol*N + col+(blockDim.x*k)];
+		}
+		__syncthreads();
+		atomicAdd(&C[row+currentCol*K], sum);
+
+	}
+}
+
+
+
 // Run the actual benchmark
 void benchmark_mat(const bool        align,
                      const std::size_t M,
 					 const std::size_t N,
-                     const long long   repeat)
+                     const std::size_t K)
 {
 
   unsigned int elementsSidePerBlock = 1;
   dim3 blockDimensions(ceil(N/elementsSidePerBlock),ceil(N/elementsSidePerBlock));
   cudaError_t errorCode;
 
-  float *v1, *v2, *v3;
+  float *A, *B, *C;
   // allocate memory on the device
-  errorCode = cudaMalloc(&v1, M * N * sizeof(float));
+  errorCode = cudaMalloc(&A, M * N * sizeof(float));
   AssertCuda(errorCode);
-  errorCode = cudaMalloc(&v2, N * sizeof(float));
+  errorCode = cudaMalloc(&B, N * K * sizeof(float));
   AssertCuda(errorCode);
-  errorCode = cudaMalloc(&v3, M * sizeof(float));
+  errorCode = cudaMalloc(&C, M * K* sizeof(float));
   AssertCuda(errorCode);
 
   const unsigned int n_blocks = (M*N + block_size - 1) / block_size;
 
-  set_vector<<<n_blocks, block_size>>>(M*N, 1.f, v1);
+  set_vector<<<n_blocks, block_size>>>(M*N, 1.f, A);
+ 
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-  set_vector<<<blockDimensions, block_size>>>(N, 1.f, v2);
+  set_vector<<<n_blocks, block_size>>>(N*K, 1.f, B);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-  set_vector<<<blockDimensions, block_size>>>(M, 0.f, v3);
+  set_vector<<<blockDimensions, block_size>>>(M*K, 0.f, C);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
 
-  std::vector<float> result_host(M);
+  std::vector<float> result_host(M*K);
   dim3 gridDim(1,M);
   dim3 blockDim(block_size,1);
   const unsigned int           n_tests = 20;
@@ -150,7 +172,9 @@ void benchmark_mat(const bool        align,
 
       for (unsigned int rep = 0; rep < n_repeat; ++rep){
       //matmul<<<blockDimensions, block_size>>>(v1, v2, v3, N, N);
-      	matvec2<<<gridDim, blockDim>>>(v1, v2, v3, M, N);
+      //matvec2<<<gridDim, blockDim>>>(A, B, C, M, N);
+  		set_vector<<<blockDimensions, block_size>>>(M*K, 0.f, C);
+		matmat<<<gridDim, blockDim>>>(A, B, C, M, N, K);
 	    errorCode = cudaGetLastError();
   	    AssertCuda(errorCode);
 	  }
@@ -168,29 +192,29 @@ void benchmark_mat(const bool        align,
     }
 
   // Copy the result back to the host
-  errorCode = cudaMemcpy(result_host.data(), v3, M* sizeof(float), cudaMemcpyDeviceToHost);  
+  errorCode = cudaMemcpy(result_host.data(), C, M * K * sizeof(float), cudaMemcpyDeviceToHost);  
   AssertCuda(errorCode);
 
-/*
- for(unsigned int i = 0; i <N*M;++i){
+
+ for(unsigned int i = 0; i <M*K;++i){
   	std::cout << result_host[(i*N)%(N*N)+(i/N)] << " ";
 	if (i % N == N-1) std::cout << "" << std::endl;
-  }*/
-  /*
+  }
+  
   for(unsigned int i = 0; i < M; ++i)
-  	std::cout << result_host[i] << std::endl;*/
+  	std::cout << result_host[i] << std::endl;
   //Not perfect check for correctness, works for 8 but not for 512 or larger
-  if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
-    std::cout << "Error in computation, got "
-              << (result_host[0] + result_host[N - 1]) << " instead of 526"
+  //if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
+    std::cout << "Computation got "
+              << (result_host[0]) << " out of " << N
               << std::endl;
 
   // Free the memory on the device
-  errorCode = cudaFree(v1);
+  errorCode = cudaFree(A);
   AssertCuda(errorCode);
-  errorCode = cudaFree(v2);
+  errorCode = cudaFree(B);
   AssertCuda(errorCode);
-  errorCode = cudaFree(v3);
+  errorCode = cudaFree(C);
   AssertCuda(errorCode);
 
   std::cout << "STREAM triad of size " << std::setw(8) << M << " x " << N
@@ -214,6 +238,7 @@ int main(int argc, char **argv)
 
   long M  = 8;
   long N  = M;
+  long K = 1;
   bool align  = false;
   long repeat = -1;
   // parse from the command line
@@ -224,15 +249,15 @@ int main(int argc, char **argv)
         M = static_cast<long>(std::stod(argv[l + 1]));
       else if (option == "-N")
         N = static_cast<long>(std::stod(argv[l + 1]));
-      else if (option == "-repeat")
-        repeat = std::atoll(argv[l + 1]);
+      else if (option == "-K")
+        K = std::atoll(argv[l + 1]);
       else if (option == "-align")
         align = std::atoi(argv[l + 1]);
       else
         std::cout << "Unknown option " << option << " - ignored!" << std::endl;
     }
 
-  benchmark_mat(align, M, N, repeat);
+  benchmark_mat(align, M, N, K);
 
   return 0;
 }

@@ -1,0 +1,2 @@
+Error in computation, got 220 instead of 526
+STREAM triad of size      256 x 300 : min/avg/max:  1.8598e-05 3.19228e-05 0.000258303 seconds or  2477.69 GFLOPS/s or   16.647 GB/s
