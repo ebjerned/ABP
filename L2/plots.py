@@ -25,19 +25,22 @@ for filename in os.listdir(directory):
         size_vec = [float(line[4]) for line in data]
         mem_vec = [float(line[-2]) for line in data]
         gflops_vec = [float(line[-5]) for line in data]
+        styles = ["-", "-", "-", "-", "-", "-", "k--"]
         #print(mem_vec)
         plt.xscale("log")
         
-        plt.plot(size_vec, mem_vec)
+        plt.plot(size_vec, mem_vec, styles[count], linewidth=1)
         
         plt.title("Matrix-vector multiplication")
         #plt.legend(["1", "256", "512", "768", "1024"])
         plt.ylabel("Memory throughput [GB/s]")
         plt.xlabel("Size N [-]")
         #plt.axes((512, 1e8, 0, 256))
-        plt.grid()
-        plt.savefig("Matvec.png")
-        plt.show()
+        if count == 6:
+            plt.legend(["32", "64", "128", "256", "512", "1024", "cuBLAS"])
+            plt.grid()
+            plt.savefig("Matvec.png")
+            plt.show()
             
     
             
