@@ -1,3 +1,0 @@
-Unknown option -min - ignored!
-The cuda call inmatmul.cu on line 144 resulted in the error 'invalid configuration argument'
-/var/spool/slurmd/job8223280/slurm_script: line 10: 11138 Aborted                 (core dumped) ./matmul -min 256

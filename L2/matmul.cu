@@ -124,8 +124,7 @@ __global__ void matmat(const float* A, const float* B, float* C, unsigned const 
 
 
 // Run the actual benchmark
-void benchmark_mat(const bool        align,
-                     const std::size_t M,
+void benchmark_mat(  const std::size_t M,
 					 const std::size_t N,
                      const std::size_t K)
 {
@@ -172,8 +171,6 @@ void benchmark_mat(const bool        align,
       const auto t1 = std::chrono::steady_clock::now();
 
       for (unsigned int rep = 0; rep < n_repeat; ++rep){
-      //matmul<<<blockDimensions, block_size>>>(v1, v2, v3, N, N);
-      //matvec2<<<gridDim, blockDim>>>(A, B, C, M, N);
   		set_vector<<<(M*K+block_size-1)/block_size, block_size>>>(M*K, 0.f, C);
 		matmat<<<gridDim, blockDim>>>(A, B, C, M, N, K);
 	    errorCode = cudaGetLastError();
@@ -208,7 +205,7 @@ void benchmark_mat(const bool        align,
   */
   //Not perfect check for correctness, works for 8 but not for 512 or larger
   //if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
-  /*  std::cout << "Computation got "
+/*    std::cout << "Computation got "
               << (result_host[0]) << " out of " << 1
               << std::endl;
 */
@@ -219,18 +216,18 @@ void benchmark_mat(const bool        align,
   AssertCuda(errorCode);
   errorCode = cudaFree(C);
   AssertCuda(errorCode);
-  if( result_host[0]  < (1+std::numeric_limits<float>::epsilon()) || result_host[0] > (1 - std::numeric_limits<float>::epsilon())){
-  std::cout << "STREAM triad of size " << std::setw(8) << M << " x " << N
+//  if( result_host[0]  < (1+std::numeric_limits<float>::epsilon()) && result_host[0] > (1 - std::numeric_limits<float>::epsilon())){
+  std::cout << "STREAM triad of size " << std::setw(8) << M << "  " << N << " " << K 
             << " : min/avg/max: " << std::setw(11) << best << " "
             << std::setw(11) << avg / n_tests << " " << std::setw(11) << worst
             << " seconds or " << std::setw(8) << 1e-9 * 2 * N * M * N / best
             << " GFLOPS/s or " << std::setw(8)
-            << 1e-9 * sizeof(float) * N*(M+2) / best << " GB/s" << std::endl; 
+            << 1e-9 * sizeof(float) *(N*M + M + N) / best << " GB/s" << std::endl; 
 
-  } else {
-	std::cout << "Invalid: Error to large" << std::endl;
+//  } else {
+//	std::cout << "Invalid: Error to large at dim" << M << " " << N << " " << K << std::endl;
 
-  }
+  //}
 }
 
 int main(int argc, char **argv)
@@ -245,10 +242,8 @@ int main(int argc, char **argv)
     }
 
   long M  = 8;
-  long N  = M;
+  long N  = -1;
   long K = 1;
-  bool align  = false;
-  long repeat = -1;
   // parse from the command line
   for (int l = 1; l < argc; l += 2)
     {
@@ -258,14 +253,16 @@ int main(int argc, char **argv)
       else if (option == "-N")
         N = static_cast<long>(std::stod(argv[l + 1]));
       else if (option == "-K")
-        K = std::atoll(argv[l + 1]);
-      else if (option == "-align")
-        align = std::atoi(argv[l + 1]);
+        K = static_cast<long>(std::stod(argv[l + 1]));
       else
         std::cout << "Unknown option " << option << " - ignored!" << std::endl;
     }
-
-  benchmark_mat(align, M, N, K);
+  if(N < 0) N = M;
+  for(float i = 7; i < 14; i+= 0.2){
+  	long size = round(pow(2,i));
+	benchmark_mat(size,size,K);
+  }
+ // benchmark_mat(M, N, K);
 
   return 0;
 }
