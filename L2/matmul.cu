@@ -17,7 +17,7 @@ if(error_code != cudaSuccess) 	\
 
 
 
-const int block_size = 64;
+const int block_size = 128;
 const int chunk_size = 1;
 
 __global__ void compute_triad(const int    N,
@@ -107,17 +107,16 @@ __global__ void matmat(const float* A, const float* B, float* C, unsigned const 
 	int col = blockDim.x*blockIdx.x + threadIdx.x;
 	int row = blockDim.y*blockIdx.y + threadIdx.y;
 	float sum = 0.f;
-	
 	if((col >= N)|| (row >= M)) return;
 	int roof = (N+blockDim.x-1)/blockDim.x;
+	roof = (col + blockDim.x*(roof-1)) < N ? roof : roof -1;
 	for(unsigned int currentCol = 0; currentCol < K; ++currentCol){
 		sum = 0.f;
 		for(unsigned int k = 0; k < roof; ++k){
-			if((col + blockDim.x*k) >= N) break;
-			sum += A[row*N+col+(blockDim.x*k)]*B[currentCol*N + col+(blockDim.x*k)];
+			sum += A[col*M+row+(blockDim.x*k)]*B[currentCol*N + col+(blockDim.x*k)];
 		}
 		__syncthreads();
-		atomicAdd(&C[row+currentCol*K], sum);
+		atomicAdd(&C[row+currentCol*M], sum);
 
 	}
 }
@@ -146,11 +145,13 @@ void benchmark_mat(const bool        align,
 
   const unsigned int n_blocks = (M*N + block_size - 1) / block_size;
 
-  set_vector<<<n_blocks, block_size>>>(M*N, 1.f, A);
+  set_vector<<<n_blocks, block_size>>>(M*N, 1.f/sqrt(N), A);
  
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-  set_vector<<<n_blocks, block_size>>>(N*K, 1.f, B);
+  set_vector<<<(N*K+block_size-1)/block_size, block_size>>>(N*K, 1.f/sqrt(N), B);
+  //dim3 risingDimB(ceil(N/elementsSidePerBlock), ceil(K/elementsSidePerBlock));
+  //set_vector_rising<<<risingDimB, block_size>>>(N*K, 1.f, B);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
   set_vector<<<blockDimensions, block_size>>>(M*K, 0.f, C);
@@ -173,7 +174,7 @@ void benchmark_mat(const bool        align,
       for (unsigned int rep = 0; rep < n_repeat; ++rep){
       //matmul<<<blockDimensions, block_size>>>(v1, v2, v3, N, N);
       //matvec2<<<gridDim, blockDim>>>(A, B, C, M, N);
-  		set_vector<<<blockDimensions, block_size>>>(M*K, 0.f, C);
+  		set_vector<<<(M*K+block_size-1)/block_size, block_size>>>(M*K, 0.f, C);
 		matmat<<<gridDim, blockDim>>>(A, B, C, M, N, K);
 	    errorCode = cudaGetLastError();
   	    AssertCuda(errorCode);
@@ -192,23 +193,25 @@ void benchmark_mat(const bool        align,
     }
 
   // Copy the result back to the host
-  errorCode = cudaMemcpy(result_host.data(), C, M * K * sizeof(float), cudaMemcpyDeviceToHost);  
+  errorCode = cudaMemcpy(result_host.data(), C , M *K* sizeof(float), cudaMemcpyDeviceToHost);  
   AssertCuda(errorCode);
 
-
+/*
  for(unsigned int i = 0; i <M*K;++i){
-  	std::cout << result_host[(i*N)%(N*N)+(i/N)] << " ";
-	if (i % N == N-1) std::cout << "" << std::endl;
+  	std::cout << result_host[(i*M)%(M*K)+(i/K)] << " ";
+	if (i % K == K-1) std::cout << "" << std::endl;
   }
   
   for(unsigned int i = 0; i < M; ++i)
   	std::cout << result_host[i] << std::endl;
+
+  */
   //Not perfect check for correctness, works for 8 but not for 512 or larger
   //if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
-    std::cout << "Computation got "
-              << (result_host[0]) << " out of " << N
+  /*  std::cout << "Computation got "
+              << (result_host[0]) << " out of " << 1
               << std::endl;
-
+*/
   // Free the memory on the device
   errorCode = cudaFree(A);
   AssertCuda(errorCode);
@@ -216,13 +219,18 @@ void benchmark_mat(const bool        align,
   AssertCuda(errorCode);
   errorCode = cudaFree(C);
   AssertCuda(errorCode);
-
+  if( result_host[0]  < (1+std::numeric_limits<float>::epsilon()) || result_host[0] > (1 - std::numeric_limits<float>::epsilon())){
   std::cout << "STREAM triad of size " << std::setw(8) << M << " x " << N
             << " : min/avg/max: " << std::setw(11) << best << " "
             << std::setw(11) << avg / n_tests << " " << std::setw(11) << worst
             << " seconds or " << std::setw(8) << 1e-9 * 2 * N * M * N / best
             << " GFLOPS/s or " << std::setw(8)
             << 1e-9 * sizeof(float) * N*(M+2) / best << " GB/s" << std::endl; 
+
+  } else {
+	std::cout << "Invalid: Error to large" << std::endl;
+
+  }
 }
 
 int main(int argc, char **argv)
