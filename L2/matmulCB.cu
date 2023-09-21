@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <iostream>
 #include <vector>
+#include "cublas_v2.h"
+
 
 #define AssertCuda(error_code) \
 if(error_code != cudaSuccess) 	\
@@ -17,7 +19,7 @@ if(error_code != cudaSuccess) 	\
 
 
 
-const int block_size = 128;
+const int block_size = 512;
 const int chunk_size = 1;
 
 __global__ void compute_triad(const int    N,
@@ -121,32 +123,7 @@ __global__ void matmat(const float* A, const float* B, float* C, unsigned const 
 	}
 }
 
-__global__ void matmatT(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const K){
-	int col = blockDim.x*blockIdx.x + threadIdx.x;
-	int row = blockDim.y*blockIdx.y + threadIdx.y;
-	float sum = 0.f;
-	if((col >= N)|| (row >= M)) return;
-	int roof = (N+blockDim.x-1)/blockDim.x;
-	roof = (col + blockDim.x*(roof-1)) < N ? roof : roof -1;
-	for(unsigned int currentCol = 0; currentCol < K; ++currentCol){
-		sum = 0.f;
-		for(unsigned int k = 0; k < roof; ++k){
-			sum += A[col+row*N+(blockDim.x)*N]*B[currentCol*N + col+(blockDim.x*k)];
-		}
-		__syncthreads();
-		atomicAdd(&C[row+currentCol*M], sum);
 
-	}
-}
-void matmat_naive(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const K){
-	for(int i = 0; i < M;++i)
-		for(int k = 0; k < K; ++k){
-			C[i+M*k]=0.f;
-			for(int j = 0; j < N; ++j)
-				C[i+M*k] += A[i+j*M]*B[j+k*N];
-		}
-
-}
 
 // Run the actual benchmark
 void benchmark_mat(  const std::size_t M,
@@ -160,7 +137,7 @@ void benchmark_mat(  const std::size_t M,
 
   float *A, *B, *C;
   // allocate memory on the device
-/*  errorCode = cudaMalloc(&A, M * N * sizeof(float));
+  errorCode = cudaMalloc(&A, M * N * sizeof(float));
   AssertCuda(errorCode);
   errorCode = cudaMalloc(&B, N * K * sizeof(float));
   AssertCuda(errorCode);
@@ -181,17 +158,6 @@ void benchmark_mat(  const std::size_t M,
   set_vector<<<blockDimensions, block_size>>>(M*K, 0.f, C);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-*/
-
-	A = (float*)malloc(M*N*sizeof(float));
-	B = (float*)malloc(N*K*sizeof(float));
-	C = (float*)malloc(M*K*sizeof(float));
-
-	for(unsigned int i = 0; i < M*K; i++){
-		A[i] = 1.f;
-		B[i] = 1.f;
-		C[i] = 0.f;
-	}
 
   std::vector<float> result_host(M*K);
   dim3 gridDim(1,M);
@@ -205,16 +171,24 @@ void benchmark_mat(  const std::size_t M,
     {
       // type of t1: std::chrono::steady_clock::time_point
       const auto t1 = std::chrono::steady_clock::now();
-/*
-      for (unsigned int rep = 0; rep < n_repeat; ++rep){
-  		set_vector<<<(M*K+block_size-1)/block_size, block_size>>>(M*K, 0.f, C);
-		matmat<<<gridDim, blockDim>>>(A, B, C, M, N, K);
-	    errorCode = cudaGetLastError();
-  	    AssertCuda(errorCode);
-	  }
-      cudaDeviceSynchronize();*/
+	  cublasHandle_t handle;
+	  cublasStatus_t stat = cublasCreate(&handle);
 
-		matmat_naive(A, B, C, M, N, K);
+	  if(stat != CUBLAS_STATUS_SUCCESS){
+		std::cout << "CUBLAS initialization failed" << std::endl;
+		std::abort();
+
+	  }
+	  float alpha = 1.f;
+	  float beta = 0.f;
+	  stat = cublasSgemv(handle, CUBLAS_OP_T,M, N, &alpha, A,M , B,1 ,&beta, C, 1);
+	  
+	  
+	  if(stat != CUBLAS_STATUS_SUCCESS){
+		std::cout << "CUBLAS operation failed" << std::endl;
+		std::abort();
+	  }
+
 
       // measure the time by taking the difference between the time point
       // before starting and now
@@ -229,8 +203,6 @@ void benchmark_mat(  const std::size_t M,
     }
 
   // Copy the result back to the host
-  //errorCode = cudaMemcpy(result_host.data(), C , M *K* sizeof(float), cudaMemcpyDeviceToHost);  
-  //AssertCuda(errorCode);
 
 /*
  for(unsigned int i = 0; i <M*K;++i){
@@ -249,16 +221,12 @@ void benchmark_mat(  const std::size_t M,
               << std::endl;
 */
   // Free the memory on the device
-/*  errorCode = cudaFree(A);
+  errorCode = cudaFree(A);
   AssertCuda(errorCode);
   errorCode = cudaFree(B);
   AssertCuda(errorCode);
   errorCode = cudaFree(C);
-  AssertCuda(errorCode);*/
-
-  free(A);
-  free(B);
-  free(C);
+  AssertCuda(errorCode);
 //  if( result_host[0]  < (1+std::numeric_limits<float>::epsilon()) && result_host[0] > (1 - std::numeric_limits<float>::epsilon())){
   std::cout << "STREAM triad of size " << std::setw(8) << M << "  " << N << " " << K 
             << " : min/avg/max: " << std::setw(11) << best << " "
@@ -303,7 +271,7 @@ int main(int argc, char **argv)
   if(N < 0) N = M;
   for(float i = 7; i < 12.4; i+= 0.2){
   	long size = round(pow(2,i));
-	benchmark_mat(size,size,size);
+	benchmark_mat(M,N,K);
   }
  // benchmark_mat(M, N, K);
 

@@ -1,0 +1,18 @@
+STREAM triad of size      128  128 128 : min/avg/max:   0.0169505   0.0174025   0.0218098 seconds or 0.247444 GFLOPS/s or 0.00392673 GB/s
+STREAM triad of size      147  147 147 : min/avg/max:   0.0185988    0.021208   0.0257261 seconds or 0.341583 GFLOPS/s or 0.00471062 GB/s
+STREAM triad of size      169  169 169 : min/avg/max:    0.028219    0.028299   0.0285779 seconds or 0.342097 GFLOPS/s or 0.0040964 GB/s
+STREAM triad of size      194  194 194 : min/avg/max:   0.0426479    0.042801   0.0431731 seconds or 0.342403 GFLOPS/s or 0.00356632 GB/s
+STREAM triad of size      223  223 223 : min/avg/max:    0.064775   0.0649731   0.0651973 seconds or 0.342403 GFLOPS/s or 0.00309842 GB/s
+STREAM triad of size      256  256 256 : min/avg/max:    0.120037    0.120089    0.120317 seconds or 0.279534 GFLOPS/s or 0.00220092 GB/s
+STREAM triad of size      294  294 294 : min/avg/max:    0.149004    0.149141    0.149481 seconds or 0.341095 GFLOPS/s or 0.00233616 GB/s
+STREAM triad of size      338  338 338 : min/avg/max:    0.226659    0.226976    0.227345 seconds or 0.340727 GFLOPS/s or 0.00202807 GB/s
+STREAM triad of size      388  388 388 : min/avg/max:    0.352436    0.352856    0.353042 seconds or  0.33147 GFLOPS/s or 0.00171742 GB/s
+STREAM triad of size      446  446 446 : min/avg/max:    0.538173    0.538478    0.539556 seconds or 0.329695 GFLOPS/s or 0.00148508 GB/s
+STREAM triad of size      512  512 512 : min/avg/max:     1.18943     1.19018      1.1911 seconds or 0.225683 GFLOPS/s or 0.000885019 GB/s
+STREAM triad of size      588  588 588 : min/avg/max:     1.26443     1.26497     1.26675 seconds or 0.321563 GFLOPS/s or 0.00109747 GB/s
+STREAM triad of size      676  676 676 : min/avg/max:     1.93585     1.93632     1.93738 seconds or 0.319153 GFLOPS/s or 0.000947032 GB/s
+STREAM triad of size      776  776 776 : min/avg/max:     3.27675     3.27749     3.27943 seconds or 0.285215 GFLOPS/s or 0.000736984 GB/s
+STREAM triad of size      891  891 891 : min/avg/max:     5.43191     5.45245     5.64939 seconds or 0.260442 GFLOPS/s or 0.000585917 GB/s
+STREAM triad of size     1024  1024 1024 : min/avg/max:     11.0524      11.082     11.3423 seconds or   0.1943 GFLOPS/s or 0.000380232 GB/s
+STREAM triad of size     1176  1176 1176 : min/avg/max:     13.0661     13.0826     13.3344 seconds or 0.248947 GFLOPS/s or 0.000424098 GB/s
+slurmstepd: error: *** JOB 8228484 ON s153 CANCELLED AT 2023-09-21T20:42:24 DUE TO TIME LIMIT ***
