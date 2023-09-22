@@ -7,4 +7,4 @@
 #SBATCH --gres=gpu:1 --gpus-per-node=1
 #SBATCH -J stream_simd # name of the job
 #SBATCH -D ./ # stay in current working directory
-./matmul -M 5000 -N 5000 
+./matmul -M 5000 -N 5000 -K 5000 

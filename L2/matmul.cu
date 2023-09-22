@@ -160,7 +160,7 @@ void benchmark_mat(  const std::size_t M,
 
   float *A, *B, *C;
   // allocate memory on the device
-/*  errorCode = cudaMalloc(&A, M * N * sizeof(float));
+  errorCode = cudaMalloc(&A, M * N * sizeof(float));
   AssertCuda(errorCode);
   errorCode = cudaMalloc(&B, N * K * sizeof(float));
   AssertCuda(errorCode);
@@ -181,20 +181,15 @@ void benchmark_mat(  const std::size_t M,
   set_vector<<<blockDimensions, block_size>>>(M*K, 0.f, C);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-*/
 
+/*
 	A = (float*)malloc(M*N*sizeof(float));
 	B = (float*)malloc(N*K*sizeof(float));
 	C = (float*)malloc(M*K*sizeof(float));
 	memset(A, 1.f, M*N*sizeof(float));
 	memset(B, 1.f, N*K*sizeof(float));
 	memset(C, 0, M*K*sizeof(float));
-/*	for(unsigned int i = 0; i < M*K; i++){
-		A[i] = 1.f;
-		B[i] = 1.f;
-		C[i] = 0.f;
-	}*/
-
+*/
   std::vector<float> result_host(M*K);
   dim3 gridDim(1,M);
   dim3 blockDim(block_size,1);
@@ -207,16 +202,16 @@ void benchmark_mat(  const std::size_t M,
     {
       // type of t1: std::chrono::steady_clock::time_point
       const auto t1 = std::chrono::steady_clock::now();
-/*
+
       for (unsigned int rep = 0; rep < n_repeat; ++rep){
   		set_vector<<<(M*K+block_size-1)/block_size, block_size>>>(M*K, 0.f, C);
-		matmat<<<gridDim, blockDim>>>(A, B, C, M, N, K);
+		matmatT<<<gridDim, blockDim>>>(A, B, C, M, N, K);
 	    errorCode = cudaGetLastError();
   	    AssertCuda(errorCode);
 	  }
-      cudaDeviceSynchronize();*/
+      cudaDeviceSynchronize();
 
-		matmat_naive(A, B, C, M, N, K);
+//		matmat_naive(A, B, C, M, N, K);
 
       // measure the time by taking the difference between the time point
       // before starting and now
@@ -231,8 +226,8 @@ void benchmark_mat(  const std::size_t M,
     }
 
   // Copy the result back to the host
-  //errorCode = cudaMemcpy(result_host.data(), C , M *K* sizeof(float), cudaMemcpyDeviceToHost);  
-  //AssertCuda(errorCode);
+  errorCode = cudaMemcpy(result_host.data(), C , M *K* sizeof(float), cudaMemcpyDeviceToHost);  
+  AssertCuda(errorCode);
 
 /*
  for(unsigned int i = 0; i <M*K;++i){
@@ -251,16 +246,16 @@ void benchmark_mat(  const std::size_t M,
               << std::endl;
 */
   // Free the memory on the device
-/*  errorCode = cudaFree(A);
+  errorCode = cudaFree(A);
   AssertCuda(errorCode);
   errorCode = cudaFree(B);
   AssertCuda(errorCode);
   errorCode = cudaFree(C);
-  AssertCuda(errorCode);*/
+  AssertCuda(errorCode);
 
-  free(A);
+/*  free(A);
   free(B);
-  free(C);
+  free(C);*/
 //  if( result_host[0]  < (1+std::numeric_limits<float>::epsilon()) && result_host[0] > (1 - std::numeric_limits<float>::epsilon())){
   std::cout << "STREAM triad of size " << std::setw(8) << M << "  " << N << " " << K 
             << " : min/avg/max: " << std::setw(11) << best << " "
@@ -303,11 +298,11 @@ int main(int argc, char **argv)
         std::cout << "Unknown option " << option << " - ignored!" << std::endl;
     }
   if(N < 0) N = M;
-  for(float i = 10.6; i < 12.4; i+= 0.2){
+/*  for(float i = 7; i < 12.4; i+= 0.2){
   	long size = round(pow(2,i));
 	benchmark_mat(size,size,size);
-  }
- // benchmark_mat(M, N, K);
+  }*/
+  benchmark_mat(M, N, K);
 
   return 0;
 }
