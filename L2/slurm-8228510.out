@@ -1,2 +1,0 @@
-STREAM triad of size     1783  1783 1783 : min/avg/max:     45.5087     45.6002     45.9726 seconds or 0.249109 GFLOPS/s or 0.00027974 GB/s
-slurmstepd: error: *** JOB 8228510 ON s151 CANCELLED AT 2023-09-21T22:35:24 DUE TO TIME LIMIT ***

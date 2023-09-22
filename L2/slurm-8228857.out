@@ -1,5 +1,0 @@
-STREAM triad of size     1552  1552 1552 : min/avg/max:   0.0285513   0.0321636   0.0378719 seconds or  261.866 GFLOPS/s or 0.337891 GB/s
-STREAM triad of size     1783  1783 1783 : min/avg/max:   0.0400559   0.0408464   0.0418835 seconds or   283.02 GFLOPS/s or 0.317821 GB/s
-STREAM triad of size     2048  2048 2048 : min/avg/max:    0.045459   0.0661575    0.079353 seconds or   377.92 GFLOPS/s or 0.369423 GB/s
-The cuda call inmatmul.cu on line 210 resulted in the error 'an illegal memory access was encountered'
-/var/spool/slurmd/job8228857/slurm_script: line 10: 55664 Aborted                 (core dumped) ./matmul -M 5000 -N 5000 -K 5000

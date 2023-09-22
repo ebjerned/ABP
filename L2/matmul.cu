@@ -131,7 +131,7 @@ __global__ void matmatT(const float* A, const float* B, float* C, unsigned const
 	for(unsigned int currentCol = 0; currentCol < K; ++currentCol){
 		sum = 0.f;
 		for(unsigned int k = 0; k < roof; ++k){
-			sum += A[col+row*N+(blockDim.x)*N]*B[currentCol*N + col+(blockDim.x*k)];
+			sum += A[col+row*N+(blockDim.x*k)]*B[currentCol*N + col+(blockDim.x*k)];
 		}
 		__syncthreads();
 		atomicAdd(&C[row+currentCol*M], sum);
@@ -268,6 +268,7 @@ void benchmark_mat(  const std::size_t M,
 //	std::cout << "Invalid: Error to large at dim" << M << " " << N << " " << K << std::endl;
 
   //}
+  std::cout  << result_host[0] << std::endl;
 }
 
 int main(int argc, char **argv)
