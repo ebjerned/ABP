@@ -17,7 +17,7 @@ if(error_code != cudaSuccess) 	\
 
 
 
-const int block_size = 512;
+const int block_size = 128;
 const int chunk_size = 1;
 
 __global__ void compute_triad(const int    N,
@@ -292,7 +292,7 @@ void benchmark_mat(  const std::size_t M,
 		if(K > 1){
 			matmat2<<<gridDim, blockDim>>>(A, B, C, M, N, K);
 		}else{
-			matvec2<<<gridDim, blockDim>>>(A, B, C, M, N);
+			matvec2T<<<gridDim, blockDim>>>(A, B, C, M, N);
 		}
 	    errorCode = cudaGetLastError();
   	    AssertCuda(errorCode);
@@ -387,11 +387,11 @@ int main(int argc, char **argv)
         std::cout << "Unknown option " << option << " - ignored!" << std::endl;
     }
   if(N < 0) N = M;
-	  for(float i = 7; i < 12.6; i+= 0.2){
+	 /* for(float i = 7; i < 12.6; i+= 0.2){
   		long size = round(pow(2,i));
 		benchmark_mat(size,size,size);
-  }
- // benchmark_mat(M, N, K);
+  }*/
+ benchmark_mat(M, N, K);
 
   return 0;
 }

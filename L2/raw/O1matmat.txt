@@ -1,0 +1,1 @@
+STREAM triad of size     5000  5000 1 : min/avg/max: 0.000497249  0.00340072   0.0584524 seconds or   502766 GFLOPS/s or  201.187 GB/s
