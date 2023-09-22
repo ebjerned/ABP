@@ -186,12 +186,14 @@ void benchmark_mat(  const std::size_t M,
 	A = (float*)malloc(M*N*sizeof(float));
 	B = (float*)malloc(N*K*sizeof(float));
 	C = (float*)malloc(M*K*sizeof(float));
-
-	for(unsigned int i = 0; i < M*K; i++){
+	memset(A, 1.f, M*N*sizeof(float));
+	memset(B, 1.f, N*K*sizeof(float));
+	memset(C, 0, M*K*sizeof(float));
+/*	for(unsigned int i = 0; i < M*K; i++){
 		A[i] = 1.f;
 		B[i] = 1.f;
 		C[i] = 0.f;
-	}
+	}*/
 
   std::vector<float> result_host(M*K);
   dim3 gridDim(1,M);
@@ -301,7 +303,7 @@ int main(int argc, char **argv)
         std::cout << "Unknown option " << option << " - ignored!" << std::endl;
     }
   if(N < 0) N = M;
-  for(float i = 7; i < 12.4; i+= 0.2){
+  for(float i = 10.6; i < 12.4; i+= 0.2){
   	long size = round(pow(2,i));
 	benchmark_mat(size,size,size);
   }
