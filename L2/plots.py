@@ -26,21 +26,21 @@ for filename in os.listdir(directory):
         sizeM_vec = [float(line[5]) for line in data]
         mem_vec = [float(line[-2]) for line in data]
         gflops_vec = [float(line[-5]) for line in data]
-        styles = ["-", "-", "-", "-", "-", "-", "k--", "-", "k--", "-", "k--", "-", "k--"]
+        styles = ["-", "-", "-", "-", "k--", "-", "k--", "-", "k--", "-", "-", "-", "k--"]
         #print(mem_vec)
         plt.xscale("log")
         
         
-        if(count == 9 or count == 10):
+        if(count == 7 or count == 8):
             plt.plot(sizeM_vec, mem_vec, styles[count], linewidth=1)
-        elif(count == 11 or count == 12):
+        elif(count > 8 and count < 13):
             plt.plot(sizeN_vec, gflops_vec, styles[count], linewidth=1)
         else:
             plt.plot(sizeN_vec, mem_vec, styles[count], linewidth=1)
         
         #plt.axes((512, 1e8, 0, 256))
-        if count == 6:
-            plt.legend(["32", "64", "128", "256", "512", "1024", "cuBLAS"])
+        if count == 4:
+            plt.legend(["32", "128", "512", "1024", "cuBLAS"])
             plt.grid()
             plt.title("Matrix-vector multiplication, M = N")
             plt.ylabel("Memory throughput [GB/s]")
@@ -48,7 +48,7 @@ for filename in os.listdir(directory):
             plt.savefig("Matvec.png")
             plt.show()
             plt.clf()
-        if count == 8:
+        if count == 6:
             plt.legend(["Implemented", "cuBLAS"])
             plt.grid()
             plt.title("Matrix-vector multiplication, fixed N=10000")
@@ -58,7 +58,7 @@ for filename in os.listdir(directory):
             plt.show()
             plt.clf()
             
-        if count == 10:
+        if count == 8:
             plt.legend(["Implemented", "cuBLAS"])
             plt.grid()
             plt.title("Matrix-vector multiplication, fixed M=16384")
@@ -69,10 +69,10 @@ for filename in os.listdir(directory):
             plt.clf()
             
         if count == 12:
-            plt.legend(["Implemented", "cuBLAS"])
+            plt.legend(["32","128", "256", "cuBLAS"])
             plt.grid()
             plt.title("Matrix-matrix multiplication, M=N=K")
-            plt.ylabel("Memory throughput [GB/s]")
+            plt.ylabel("Computations [GFLOPS/s]")
             plt.xlabel("Size N [-]")
             plt.savefig("Matmat.png")
             plt.show()
