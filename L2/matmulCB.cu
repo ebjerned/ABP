@@ -146,13 +146,14 @@ void benchmark_mat(  const std::size_t M,
 
   const unsigned int n_blocks = (M*N + block_size - 1) / block_size;
 
-  set_vector<<<n_blocks, block_size>>>(M*N, 1.f/sqrt(N), A);
+  dim3 risingDimB(ceil(M/elementsSidePerBlock), ceil(N/elementsSidePerBlock));
+  set_vector_rising<<<risingDimB, block_size>>>(M*N, 1.f/*/sqrt(N)*/, A);
  
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-  set_vector<<<(N*K+block_size-1)/block_size, block_size>>>(N*K, 1.f/sqrt(N), B);
-  //dim3 risingDimB(ceil(N/elementsSidePerBlock), ceil(K/elementsSidePerBlock));
-  //set_vector_rising<<<risingDimB, block_size>>>(N*K, 1.f, B);
+  set_vector<<<(N*K+block_size-1)/block_size, block_size>>>(N*K, 1.f/*/sqrt(N)*/, B);
+
+//  set_vector_rising<<<risingDimB, block_size>>>(N*K, 1.f, B);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
   set_vector<<<blockDimensions, block_size>>>(M*K, 0.f, C);
@@ -203,17 +204,18 @@ void benchmark_mat(  const std::size_t M,
     }
 
   // Copy the result back to the host
-
+	errorCode = cudaMemcpy(result_host.data(), C, M*K*sizeof(float), cudaMemcpyDeviceToHost);
+	AssertCuda(errorCode);
 /*
  for(unsigned int i = 0; i <M*K;++i){
   	std::cout << result_host[(i*M)%(M*K)+(i/K)] << " ";
 	if (i % K == K-1) std::cout << "" << std::endl;
-  }
+  }*/
   
   for(unsigned int i = 0; i < M; ++i)
   	std::cout << result_host[i] << std::endl;
 
-  */
+ 
   //Not perfect check for correctness, works for 8 but not for 512 or larger
   //if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
 /*    std::cout << "Computation got "
@@ -269,11 +271,11 @@ int main(int argc, char **argv)
         std::cout << "Unknown option " << option << " - ignored!" << std::endl;
     }
   if(N < 0) N = M;
-  for(float i = 7; i < 12.4; i+= 0.2){
+  /*for(float i = 7; i < 12.4; i+= 0.2){
   	long size = round(pow(2,i));
 	benchmark_mat(M,N,K);
-  }
- // benchmark_mat(M, N, K);
+  }*/
+  benchmark_mat(M, N, K);
 
   return 0;
 }

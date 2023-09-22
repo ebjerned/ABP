@@ -17,7 +17,7 @@ if(error_code != cudaSuccess) 	\
 
 
 
-const int block_size = 128;
+const int block_size = 512;
 const int chunk_size = 1;
 
 __global__ void compute_triad(const int    N,
@@ -54,7 +54,8 @@ __global__ void set_vector_rising(const int N, const float val, float *x)
     {
       const int idx = idx_base + i * block_size;
       if (idx < N)
-        x[idx] = val*(blockIdx.x*blockDim.x+threadIdx.x + threadIdx.y*gridDim.x*blockDim.x);
+        x[idx] =val*(blockIdx.x*blockDim.x+threadIdx.x + threadIdx.y*gridDim.x*blockDim.x);
+		
     }
 }
 
@@ -78,7 +79,7 @@ __global__ void matmul(const float*A, const float*B, float* C, unsigned const in
 	C[i*N+j] = acc_sum;
 
 }
-
+/*
 __global__ void matvec(const float* A, const float* x, float* b, unsigned const int M, unsigned const int N){
 	int index = blockDim.x*blockIdx.x + threadIdx.x;
 	float sum = 0.f;
@@ -120,7 +121,7 @@ __global__ void matmat(const float* A, const float* B, float* C, unsigned const 
 
 	}
 }
-
+*/
 __global__ void matmatT(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const K){
 	int col = blockDim.x*blockIdx.x + threadIdx.x;
 	int row = blockDim.y*blockIdx.y + threadIdx.y;
@@ -137,6 +138,88 @@ __global__ void matmatT(const float* A, const float* B, float* C, unsigned const
 		atomicAdd(&C[row+currentCol*M], sum);
 
 	}
+}
+
+__global__ void matmat2(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N, unsigned const K){
+	int col = blockDim.x*blockIdx.x + threadIdx.x;
+	int row = blockDim.y*blockIdx.y + threadIdx.y;
+	
+	if((col >= N)|| (row >= M)) return;
+
+
+	int roof = (M+blockDim.y-1)/blockDim.y;
+	roof = (row + blockDim.y*(roof-1)) < M ? roof : roof -1;
+	for(unsigned int currentRow = 0; currentRow < N; ++currentRow){
+		float sum = 0.f;
+		for(unsigned int k= 0; k < roof; k++){
+			float coeff = B[K*currentRow + col+ blockDim.y*k];
+			sum += A[col*M+row + (blockDim.y*k)]*coeff;
+	}
+	
+	__syncthreads();
+	atomicAdd(&C[col+currentRow*K], sum);
+   }
+}
+
+__global__ void matmat2T(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N, unsigned const K){
+	int col = blockDim.x*blockIdx.x + threadIdx.x;
+	int row = blockDim.y*blockIdx.y + threadIdx.y;
+	
+	if((col >= N)|| (row >= M)) return;
+
+
+	int roof = (M+blockDim.y-1)/blockDim.y;
+	roof = (row + blockDim.y*(roof-1)) < M ? roof : roof -1;
+	for(unsigned int currentRow = 0; currentRow < N; ++currentRow){
+		float sum = 0.f;
+		for(unsigned int k= 0; k < roof; k++){
+			float coeff = B[K*currentRow + col+ blockDim.y*k];
+			sum += A[col+row*N + (blockDim.y*k)]*coeff;
+	}
+	
+	__syncthreads();
+	atomicAdd(&C[row+currentRow*M], sum);
+   }
+}
+
+
+__global__ void matvec2(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N	){
+	int col = blockDim.x*blockIdx.x + threadIdx.x;
+	int row = blockDim.y*blockIdx.y + threadIdx.y;
+	
+	if((col >= N)|| (row >= M)) return;
+
+	int roof = (M+blockDim.y-1)/blockDim.y;
+	roof = (row + blockDim.y*(roof-1)) < M ? roof : roof -1;
+	float sum = 0.f;
+	for(unsigned int k= 0; k < roof; k++){
+		float coeff = B[col+ blockDim.y*k];
+		sum += A[col*M+row + (blockDim.y*k)]*coeff;
+	}
+	
+	__syncthreads();
+	atomicAdd(&C[col], sum);
+   
+}
+
+
+__global__ void matvec2T(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N	){
+	int col = blockDim.x*blockIdx.x + threadIdx.x;
+	int row = blockDim.y*blockIdx.y + threadIdx.y;
+	
+	if((col >= N)|| (row >= M)) return;
+
+	int roof = (M+blockDim.y-1)/blockDim.y;
+	roof = (row + blockDim.y*(roof-1)) < M ? roof : roof -1;
+	float sum = 0.f;
+	for(unsigned int k= 0; k < roof; k++){
+		float coeff = B[col+ blockDim.y*k];
+		sum += A[col+row*N + (blockDim.y*k)]*coeff;
+	}
+	
+	__syncthreads();
+	atomicAdd(&C[col], sum);
+   
 }
 void matmat_naive(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const K){
 	for(int i = 0; i < M;++i)
@@ -169,13 +252,14 @@ void benchmark_mat(  const std::size_t M,
 
   const unsigned int n_blocks = (M*N + block_size - 1) / block_size;
 
-  set_vector<<<n_blocks, block_size>>>(M*N, 1.f/sqrt(N), A);
+  dim3 risingDimB(ceil(M/elementsSidePerBlock), ceil(N/elementsSidePerBlock));
+  set_vector_rising<<<risingDimB, block_size>>>(M*N, 1.f/*/sqrt(N)*/, A);
  
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-  set_vector<<<(N*K+block_size-1)/block_size, block_size>>>(N*K, 1.f/sqrt(N), B);
-  //dim3 risingDimB(ceil(N/elementsSidePerBlock), ceil(K/elementsSidePerBlock));
-  //set_vector_rising<<<risingDimB, block_size>>>(N*K, 1.f, B);
+  set_vector<<<(N*K+block_size-1)/block_size, block_size>>>(N*K, 1.f/*/sqrt(N)*/, B);
+ 
+//  set_vector_rising<<<risingDimB, block_size>>>(N*K, 1.f, B);
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
   set_vector<<<blockDimensions, block_size>>>(M*K, 0.f, C);
@@ -191,8 +275,8 @@ void benchmark_mat(  const std::size_t M,
 	memset(C, 0, M*K*sizeof(float));
 */
   std::vector<float> result_host(M*K);
-  dim3 gridDim(1,M);
-  dim3 blockDim(block_size,1);
+  dim3 gridDim(N,1);
+  dim3 blockDim(1,block_size);
   const unsigned int           n_tests = 20;
   /*const unsigned long long int n_repeat =
     repeat > 0 ? repeat : std::max(1UL, 100000000U / N);*/
@@ -205,7 +289,11 @@ void benchmark_mat(  const std::size_t M,
 
       for (unsigned int rep = 0; rep < n_repeat; ++rep){
   		set_vector<<<(M*K+block_size-1)/block_size, block_size>>>(M*K, 0.f, C);
-		matmatT<<<gridDim, blockDim>>>(A, B, C, M, N, K);
+		if(K > 1){
+			matmat2<<<gridDim, blockDim>>>(A, B, C, M, N, K);
+		}else{
+			matvec2<<<gridDim, blockDim>>>(A, B, C, M, N);
+		}
 	    errorCode = cudaGetLastError();
   	    AssertCuda(errorCode);
 	  }
@@ -226,7 +314,7 @@ void benchmark_mat(  const std::size_t M,
     }
 
   // Copy the result back to the host
-  errorCode = cudaMemcpy(result_host.data(), C , M *K* sizeof(float), cudaMemcpyDeviceToHost);  
+  errorCode = cudaMemcpy(result_host.data(),  C, M *K* sizeof(float), cudaMemcpyDeviceToHost);  
   AssertCuda(errorCode);
 
 /*
@@ -237,8 +325,8 @@ void benchmark_mat(  const std::size_t M,
   
   for(unsigned int i = 0; i < M; ++i)
   	std::cout << result_host[i] << std::endl;
-
-  */
+*/
+  
   //Not perfect check for correctness, works for 8 but not for 512 or larger
   //if (result_host[0] != N*((N-1)*N*(2*N-1)/6))
 /*    std::cout << "Computation got "
@@ -268,7 +356,7 @@ void benchmark_mat(  const std::size_t M,
 //	std::cout << "Invalid: Error to large at dim" << M << " " << N << " " << K << std::endl;
 
   //}
-  std::cout  << result_host[0] << std::endl;
+  //std::cout  << result_host[0] << std::endl;
 }
 
 int main(int argc, char **argv)
@@ -299,11 +387,11 @@ int main(int argc, char **argv)
         std::cout << "Unknown option " << option << " - ignored!" << std::endl;
     }
   if(N < 0) N = M;
-/*  for(float i = 7; i < 12.4; i+= 0.2){
-  	long size = round(pow(2,i));
-	benchmark_mat(size,size,size);
-  }*/
-  benchmark_mat(M, N, K);
+	  for(float i = 7; i < 12.6; i+= 0.2){
+  		long size = round(pow(2,i));
+		benchmark_mat(size,size,size);
+  }
+ // benchmark_mat(M, N, K);
 
   return 0;
 }
