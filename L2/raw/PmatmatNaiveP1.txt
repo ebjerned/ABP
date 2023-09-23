@@ -17,4 +17,3 @@ STREAM triad of size     1024  1024 1024 : min/avg/max:     8.65664     8.66621 
 STREAM triad of size     1176  1176 1176 : min/avg/max:      13.171     13.1747     13.1855 seconds or 0.246963 GFLOPS/s or 0.000420719 GB/s
 STREAM triad of size     1351  1351 1351 : min/avg/max:     19.4852       19.49     19.5044 seconds or   0.2531 GFLOPS/s or 0.00037524 GB/s
 STREAM triad of size     1552  1552 1552 : min/avg/max:     31.0208     31.0329     31.0655 seconds or 0.241019 GFLOPS/s or 0.000310992 GB/s
-slurmstepd: error: *** JOB 8228852 ON s151 CANCELLED AT 2023-09-22T09:51:40 DUE TO TIME LIMIT ***

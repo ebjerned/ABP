@@ -26,14 +26,15 @@ for filename in os.listdir(directory):
         sizeM_vec = [float(line[5]) for line in data]
         mem_vec = [float(line[-2]) for line in data]
         gflops_vec = [float(line[-5]) for line in data]
-        styles = ["-", "-", "-", "-", "k--", "-", "k--", "-", "k--", "-", "-", "-", "k--"]
+        styles = ["-", "-", "-", "-", "k--", "-", "k--", "-", "k--", "-", "-", "-", "k--","-", "-"]
         #print(mem_vec)
         plt.xscale("log")
         
-        
+        print(count)
         if(count == 7 or count == 8):
             plt.plot(sizeM_vec, mem_vec, styles[count], linewidth=1)
-        elif(count > 8 and count < 13):
+        elif(count > 8 and count < 14):
+            plt.yscale("log")
             plt.plot(sizeN_vec, gflops_vec, styles[count], linewidth=1)
         else:
             plt.plot(sizeN_vec, mem_vec, styles[count], linewidth=1)
@@ -68,8 +69,8 @@ for filename in os.listdir(directory):
             plt.show()
             plt.clf()
             
-        if count == 12:
-            plt.legend(["32","128", "256", "cuBLAS"])
+        if count == 13:
+            plt.legend(["32","128", "512", "cuBLAS", "Naive"])
             plt.grid()
             plt.title("Matrix-matrix multiplication, M=N=K")
             plt.ylabel("Computations [GFLOPS/s]")
