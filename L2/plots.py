@@ -29,8 +29,6 @@ for filename in os.listdir(directory):
         styles = ["-", "-", "-", "-", "k--", "-", "k--", "-", "k--", "-", "-", "-", "k--","-", "-"]
         #print(mem_vec)
         plt.xscale("log")
-        
-        print(count)
         if(count == 7 or count == 8):
             plt.plot(sizeM_vec, mem_vec, styles[count], linewidth=1)
         elif(count > 8 and count < 14):
