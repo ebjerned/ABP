@@ -166,7 +166,7 @@ void benchmark_mat(  const std::size_t M,
   const unsigned int           n_tests = 20;
   /*const unsigned long long int n_repeat =
     repeat > 0 ? repeat : std::max(1UL, 100000000U / N);*/
-  const unsigned int n_repeat = 1;
+  const unsigned int n_repeat = 20;
   double best = 1e10, worst = 0, avg = 0;
   for (unsigned int t = 0; t < n_tests; ++t)
     {
@@ -176,24 +176,24 @@ void benchmark_mat(  const std::size_t M,
 	  cublasHandle_t handle;
 	  cublasStatus_t stat = cublasCreate(&handle);
 
+		for(int i = 0; i < n_repeat; ++i){
+		  if(stat != CUBLAS_STATUS_SUCCESS){
+			std::cout << "CUBLAS initialization failed" << std::endl;
+			std::abort();
 
-	  if(stat != CUBLAS_STATUS_SUCCESS){
-		std::cout << "CUBLAS initialization failed" << std::endl;
-		std::abort();
+	 		 }
+		  float alpha = 1.f;
+		  float beta = 0.f;
 
-	  }
-	  float alpha = 1.f;
-	  float beta = 0.f;
-
-	  stat = cublasSgemv(handle, CUBLAS_OP_N,M, N, &alpha, A,M , B,1 ,&beta, C, 1);
+		  stat = cublasSgemv(handle, CUBLAS_OP_N,M, N, &alpha, A,M , B,1 ,&beta, C, 1);
 	  
 
 	  
-	  if(stat != CUBLAS_STATUS_SUCCESS){
-		std::cout << "CUBLAS operation failed" << std::endl;
-		std::abort();
-	  }
-
+		  if(stat != CUBLAS_STATUS_SUCCESS){
+			std::cout << "CUBLAS operation failed" << std::endl;
+			std::abort();
+	  	}
+	 	}
       const double time =
         std::chrono::duration_cast<std::chrono::duration<double>>(
           std::chrono::steady_clock::now() - t1)
@@ -278,7 +278,7 @@ int main(int argc, char **argv)
   if(N < 0) N = M;
   for(float i = 7; i < 14; i+= 0.2){
   	long size = round(pow(2,i));
-	benchmark_mat(16384,size,K);
+	benchmark_mat(size,size,K);
   }
  // benchmark_mat(M, N, K);
 
