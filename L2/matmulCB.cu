@@ -278,7 +278,7 @@ int main(int argc, char **argv)
   if(N < 0) N = M;
   for(float i = 7; i < 14; i+= 0.2){
   	long size = round(pow(2,i));
-	benchmark_mat(size,size,K);
+	benchmark_mat(16384,size,K);
   }
  // benchmark_mat(M, N, K);
 
