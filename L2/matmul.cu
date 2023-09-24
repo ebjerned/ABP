@@ -183,7 +183,6 @@ void benchmark_mat(  const std::size_t M,
       avg += time / n_repeat;
     }
 
-  // Copy the result back to the host
   errorCode = cudaMemcpy(result_host.data(),  C, M *K* sizeof(float), cudaMemcpyDeviceToHost);  
   AssertCuda(errorCode);
 
@@ -203,7 +202,7 @@ void benchmark_mat(  const std::size_t M,
   errorCode = cudaFree(C);
   AssertCuda(errorCode);
 
-  std::cout << "STREAM triad of size " << std::setw(8) << M << "  " << N << " " << K 
+  std::cout << "MATMUL (GPU) of size (M,N,K) " << std::setw(8) << M << "  " << N << " " << K 
             << " : min/avg/max: " << std::setw(11) << best << " "
             << std::setw(11) << avg / n_tests << " " << std::setw(11) << worst
             << " seconds or " << std::setw(8) << 1e-9 * 2 * N * M * N / best
