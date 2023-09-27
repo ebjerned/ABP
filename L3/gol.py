@@ -30,20 +30,24 @@ plt.imshow(board)
 
 def perform_tests(board, benchCpu=False, dtypes=[tf.float16]):
     times = []
-    for d in dtypes:
-        boardtf = tf.cast(board, dtype=d)
-        time = timed_life(boardtf)
-        print(str(d) + " took: " + str(time) + " s")
-        times.append[time]
-        print(times)
+
     
     if benchCpu:
+        print("CPU Test")
         tf.config.set_visible_devices([], 'GPU')
         tf.debugging.set_log_device_placement(True)
-        boardtf = tf.cast(board, dtype=d)
+        boardtf = tf.cast(board, dtype=tf.float16)
         time = timed_life(boardtf)
         print("CPU time: " +str(time) + " s")
         times.append(time)
+
+    else:
+        for d in dtypes:
+            boardtf = tf.cast(board, dtype=d)
+            time = timed_life(boardtf)
+            print(str(d) + " took: " + str(time) + " s")
+            times.append(time)
+            print(times)
     print(dtypes)
     print(times)
     return times
@@ -56,6 +60,7 @@ def timed_life(board):
     toc = timeit.default_timer();
     
     result = np.count_nonzero(np.cast[np.int32](boardresult));
+    print(result)
     assert(result == 2658)
     return (toc-tic)
 
@@ -76,14 +81,16 @@ def runlife(board, iters):
         # Then, update the board by keeping these tensors
         board = tf.cast(tf.logical_or(survive, born),board.dtype)
         
-        print(i)
+        #print(i)
         
     # Final work
     board = tf.reshape(board, [2048,2048])
     return board
 
 
-times = perform_tests(board,benchCpu=True, dtypes=[tf.float16, tf.float32, tf.bfloat16, tf.uint8, tf.int32, tf.bool])
+times = perform_tests(board,benchCpu=False, dtypes=[tf.float16, tf.float32, tf.bfloat16])
+
+#times = perform_tests(board,benchCpu=True, dtypes=[tf.float16, tf.float32, tf.bfloat16])
 
 #tic = timeit.default_timer()
 #boardresult = runlife(boardtf, 1000);
