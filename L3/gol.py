@@ -20,7 +20,7 @@ def perform_tests(board, benchCpu=False, dtypes=[tf.float16]):
         print("CPU Test")
         tf.config.set_visible_devices([], 'GPU')
         tf.debugging.set_log_device_placement(True)
-        boardtf = tf.cast(board, dtype=tf.float16)
+        boardtf = tf.cast(board, dtype=tf.float32)
         time = timed_life(boardtf)
         print("CPU time: " +str(time) + " s")
         times.append(time)
@@ -63,7 +63,7 @@ def runlife(board, iters):
     return board
 
 
-times = perform_tests(board,benchCpu=False, dtypes=[tf.float16, tf.float32, tf.bfloat16])
+##times = perform_tests(board,benchCpu=False, dtypes=[tf.float16, tf.float32, tf.bfloat16])
 
 ## FOR TESTING CPU PERFOMANCE
-#times = perform_tests(board,benchCpu=True, dtypes=[tf.float16, tf.float32, tf.bfloat16])
+times = perform_tests(board,benchCpu=True, dtypes=[tf.float16, tf.float32, tf.bfloat16])
