@@ -12,6 +12,6 @@ export LD_LIBRARY_PATH=$CUDNN_PATH/lib:$CONDA_PREFIX/lib/:$LD_LIBRARY_PATH
 
 module load gcc/8.4.0
 module use /sw/EasyBuild/snowy/modules/all/
-module use /sw/EasyBuild/snowy-GPU/modules/all/
+module use /sw/EasyBuild/snowy-gpu/modules/all/
 module use python_ML_packages/3.9.5-gpu
 module load CUDA/11.7.0

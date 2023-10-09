@@ -1,0 +1,20 @@
+Hello world
+Element calculation test with N = 0 Time: 9.115e-06 Melement/s: 0 GFLOPS/s: 0 GB/s: 0
+Element calculation test with N = 20000000 Time: 0.444269 Melement/s: 45 GFLOPS/s: 2.83612 GB/s: 9.00356
+Element calculation test with N = 40000000 Time: 0.837687 Melement/s: 47 GFLOPS/s: 3.00828 GB/s: 9.55011
+Element calculation test with N = 60000000 Time: 1.19886 Melement/s: 50 GFLOPS/s: 3.15298 GB/s: 10.0095
+Element calculation test with N = 80000000 Time: 4.51742 Melement/s: 17 GFLOPS/s: 0.164924 GB/s: 3.54185
+Element calculation test with N = 100000000 Time: 1.87362 Melement/s: 53 GFLOPS/s: 1.07014 GB/s: 10.6745
+Element calculation test with N = 120000000 Time: 2.23717 Melement/s: 53 GFLOPS/s: 1.45945 GB/s: 10.7279
+Element calculation test with N = 140000000 Time: 2.53237 Melement/s: 55 GFLOPS/s: 0.09085 GB/s: 11.0569
+Element calculation test with N = 160000000 Time: 3.91683 Melement/s: 40 GFLOPS/s: 0.380426 GB/s: 8.16987
+Element calculation test with N = 180000000 Time: 4.19576 Melement/s: 42 GFLOPS/s: 0.65544 GB/s: 0.390934
+Element calculation test with N = 200000000 Time: 3.63902 Melement/s: 54 GFLOPS/s: 1.10196 GB/s: 1.54994
+Element calculation test with N = 220000000 Time: 3.98727 Melement/s: 55 GFLOPS/s: 0.244553 GB/s: 2.41776
+Element calculation test with N = 240000000 Time: 4.33603 Melement/s: 55 GFLOPS/s: 0.515471 GB/s: 3.1458
+Element calculation test with N = 260000000 Time: 4.94791 Melement/s: 52 GFLOPS/s: 0.706378 GB/s: 3.56519
+Element calculation test with N = 280000000 Time: 17.1384 Melement/s: 16 GFLOPS/s: 0.0268479 GB/s: 1.26268
+Element calculation test with N = 300000000 Time: 16.0283 Melement/s: 18 GFLOPS/s: 0.107318 GB/s: 1.59968
+Element calculation test with N = 320000000 Time: 15.3389 Melement/s: 20 GFLOPS/s: 0.194285 GB/s: 1.93235
+Element calculation test with N = 340000000 Time: 5.78661 Melement/s: 58 GFLOPS/s: 0.732748 GB/s: 5.81346
+slurmstepd: error: *** JOB 8405631 ON s14 CANCELLED AT 2023-10-08T16:10:08 DUE TO TIME LIMIT ***

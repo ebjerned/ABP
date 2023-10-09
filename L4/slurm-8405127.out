@@ -1,0 +1,28 @@
+Hello world
+Kokkos::OpenMP::initialize WARNING: OMP_PROC_BIND environment variable not set
+  In general, for best performance with OpenMP 4.0 or better set OMP_PROC_BIND=spread and OMP_PLACES=threads
+  For best performance with OpenMP 3.1 set OMP_PROC_BIND=true
+  For unit testing set OMP_PROC_BIND=false
+
+MPI detected: For OpenMP binding to work as intended, MPI ranks must be bound to exclusive CPU sets.
+
+Element calculation test with N = 0 Time: 0.00392719 Melement/s: 0 GFLOPS/s: 0 GB/s: 0
+Element calculation test with N = 5000000 Time: 0.061226 Melement/s: 81 GFLOPS/s: 5 GB/s: 16
+Element calculation test with N = 10000000 Time: 0.124997 Melement/s: 80 GFLOPS/s: 5 GB/s: 16
+Element calculation test with N = 15000000 Time: 0.177029 Melement/s: 84 GFLOPS/s: 5 GB/s: 16
+Element calculation test with N = 20000000 Time: 0.237066 Melement/s: 84 GFLOPS/s: 5 GB/s: 16
+Element calculation test with N = 25000000 Time: 0.2911 Melement/s: 85 GFLOPS/s: 5 GB/s: 17
+Element calculation test with N = 30000000 Time: 0.31989 Melement/s: 93 GFLOPS/s: 5 GB/s: 18
+Element calculation test with N = 35000000 Time: 0.604356 Melement/s: 57 GFLOPS/s: 3 GB/s: 11
+Element calculation test with N = 40000000 Time: 0.632204 Melement/s: 63 GFLOPS/s: 3 GB/s: 12
+Element calculation test with N = 45000000 Time: 0.460022 Melement/s: 97 GFLOPS/s: 6 GB/s: 19
+Element calculation test with N = 50000000 Time: 0.513857 Melement/s: 97 GFLOPS/s: 6 GB/s: 19
+Element calculation test with N = 55000000 Time: 0.612569 Melement/s: 89 GFLOPS/s: 5 GB/s: 17
+Element calculation test with N = 60000000 Time: 0.636105 Melement/s: 94 GFLOPS/s: 5 GB/s: 18
+Element calculation test with N = 65000000 Time: 0.66896 Melement/s: 97 GFLOPS/s: 6 GB/s: 19
+Element calculation test with N = 70000000 Time: 0.796249 Melement/s: 87 GFLOPS/s: 0 GB/s: 17
+Element calculation test with N = 75000000 Time: 0.746794 Melement/s: 100 GFLOPS/s: 0 GB/s: 20
+Element calculation test with N = 80000000 Time: 0.816536 Melement/s: 97 GFLOPS/s: 0 GB/s: 19
+Element calculation test with N = 85000000 Time: 0.886368 Melement/s: 95 GFLOPS/s: 1 GB/s: 19
+Element calculation test with N = 90000000 Time: 0.960737 Melement/s: 93 GFLOPS/s: 1 GB/s: 18
+Element calculation test with N = 95000000 Time: 1.18422 Melement/s: 80 GFLOPS/s: 1 GB/s: 16

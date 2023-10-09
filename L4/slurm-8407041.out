@@ -1,0 +1,22 @@
+Hello world
+Element calculation test with N = 0 Time: 1.3173e-05 Melement/s: 0 GFLOPS/s: 0 GB/s: 0
+Element calculation test with N = 20000000 Time: 0.574631 Melement/s: 34 GFLOPS/s: 2.19271 GB/s: 6.96099
+Element calculation test with N = 40000000 Time: 1.00083 Melement/s: 39 GFLOPS/s: 2.51792 GB/s: 7.9934
+Element calculation test with N = 60000000 Time: 1.40965 Melement/s: 42 GFLOPS/s: 2.68153 GB/s: 8.51278
+Element calculation test with N = 80000000 Time: 1.5652 Melement/s: 51 GFLOPS/s: 0.475997 GB/s: 10.2223
+Element calculation test with N = 100000000 Time: 1.16561 Melement/s: 85 GFLOPS/s: 1.72016 GB/s: 17.1584
+Element calculation test with N = 120000000 Time: 1.39204 Melement/s: 86 GFLOPS/s: 2.3455 GB/s: 17.2409
+Element calculation test with N = 140000000 Time: 1.62895 Melement/s: 85 GFLOPS/s: 0.141236 GB/s: 17.189
+Element calculation test with N = 160000000 Time: 3.01394 Melement/s: 53 GFLOPS/s: 0.49439 GB/s: 10.6173
+Element calculation test with N = 180000000 Time: 2.08742 Melement/s: 86 GFLOPS/s: 1.31745 GB/s: 0.785783
+Element calculation test with N = 200000000 Time: 2.32136 Melement/s: 86 GFLOPS/s: 1.72747 GB/s: 2.42972
+Element calculation test with N = 220000000 Time: 2.55738 Melement/s: 86 GFLOPS/s: 0.381289 GB/s: 3.76959
+Element calculation test with N = 240000000 Time: 2.78821 Melement/s: 86 GFLOPS/s: 0.801626 GB/s: 4.89213
+Element calculation test with N = 260000000 Time: 3.02888 Melement/s: 85 GFLOPS/s: 1.15392 GB/s: 5.82401
+Element calculation test with N = 280000000 Time: 3.32143 Melement/s: 84 GFLOPS/s: 0.138534 GB/s: 6.51534
+Element calculation test with N = 300000000 Time: 3.49645 Melement/s: 85 GFLOPS/s: 0.491965 GB/s: 7.33322
+Element calculation test with N = 320000000 Time: 3.4064 Melement/s: 93 GFLOPS/s: 0.874861 GB/s: 8.70133
+Element calculation test with N = 340000000 Time: 3.17637 Melement/s: 107 GFLOPS/s: 1.3349 GB/s: 10.5908
+Element calculation test with N = 360000000 Time: 2.9396 Melement/s: 122 GFLOPS/s: 0.409976 GB/s: 1.11598
+Element calculation test with N = 380000000 Time: 4.41871 Melement/s: 85 GFLOPS/s: 0.557892 GB/s: 1.64766
+Element calculation test with N = 400000000 Time: 2.66811 Melement/s: 149 GFLOPS/s: 1.39618 GB/s: 4.22791

@@ -1,0 +1,21 @@
+Hello world
+Element calculation test with N = 0 Time: 1.6875e-05 Melement/s: 0 GFLOPS/s: 0 GB/s: 0
+Element calculation test with N = 20000000 Time: 0.244221 Melement/s: 81 GFLOPS/s: 5.15927 GB/s: 16.3786
+Element calculation test with N = 40000000 Time: 0.471624 Melement/s: 84 GFLOPS/s: 5.34324 GB/s: 16.9627
+Element calculation test with N = 60000000 Time: 0.753311 Melement/s: 79 GFLOPS/s: 5.01785 GB/s: 15.9297
+Element calculation test with N = 80000000 Time: 1.46921 Melement/s: 54 GFLOPS/s: 0.507098 GB/s: 10.8902
+Element calculation test with N = 100000000 Time: 1.16702 Melement/s: 85 GFLOPS/s: 1.71807 GB/s: 17.1376
+Element calculation test with N = 120000000 Time: 2.0823 Melement/s: 57 GFLOPS/s: 1.56799 GB/s: 11.5257
+Element calculation test with N = 140000000 Time: 1.63327 Melement/s: 85 GFLOPS/s: 0.140862 GB/s: 17.1435
+Element calculation test with N = 160000000 Time: 2.44696 Melement/s: 65 GFLOPS/s: 0.608946 GB/s: 13.0775
+Element calculation test with N = 180000000 Time: 2.09108 Melement/s: 86 GFLOPS/s: 1.31514 GB/s: 0.784409
+Element calculation test with N = 200000000 Time: 2.30784 Melement/s: 86 GFLOPS/s: 1.73758 GB/s: 2.44396
+Element calculation test with N = 220000000 Time: 2.55832 Melement/s: 85 GFLOPS/s: 0.381147 GB/s: 3.76819
+Element calculation test with N = 240000000 Time: 2.79616 Melement/s: 85 GFLOPS/s: 0.799344 GB/s: 4.87821
+Element calculation test with N = 260000000 Time: 3.94568 Melement/s: 65 GFLOPS/s: 0.885803 GB/s: 4.47078
+Element calculation test with N = 280000000 Time: 5.03026 Melement/s: 55 GFLOPS/s: 0.0914725 GB/s: 4.30201
+Element calculation test with N = 300000000 Time: 5.72343 Melement/s: 52 GFLOPS/s: 0.300542 GB/s: 4.47988
+Element calculation test with N = 320000000 Time: 5.71914 Melement/s: 55 GFLOPS/s: 0.52108 GB/s: 5.18264
+Element calculation test with N = 340000000 Time: 3.5851 Melement/s: 94 GFLOPS/s: 1.18271 GB/s: 9.38336
+Element calculation test with N = 360000000 Time: 5.82818 Melement/s: 61 GFLOPS/s: 0.206782 GB/s: 0.562873
+slurmstepd: error: *** JOB 8406059 ON s14 CANCELLED AT 2023-10-08T16:22:46 DUE TO TIME LIMIT ***
