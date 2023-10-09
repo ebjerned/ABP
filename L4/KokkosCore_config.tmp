@@ -13,7 +13,6 @@ Makefile constructed configuration:
 #define KOKKOS_VERSION_PATCH 00
 
 /* Execution Spaces */
-#define KOKKOS_ENABLE_CUDA
 #define KOKKOS_ENABLE_OPENMP
 /* General Settings */
 #define KOKKOS_ENABLE_DEPRECATED_CODE_4
@@ -22,6 +21,5 @@ Makefile constructed configuration:
 #define KOKKOS_ENABLE_LIBDL
 /* Optimization Settings */
 /* Cuda Settings */
-#define KOKKOS_ENABLE_CUDA_LAMBDA
-#define KOKKOS_ARCH_TURING75
+#define KOKKOS_ARCH_AVX
 #define KOKKOS_ENABLE_IMPL_MDSPAN

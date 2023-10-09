@@ -1,0 +1,5 @@
+Hello world
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Kokkos failed to allocate memory for label "J".  Allocation using MemorySpace named "Host" failed with the following error:  Allocation of size 1.718e+10 G failed, likely due to insufficient memory.  (The allocation mechanism was standard malloc().)
+
+/var/spool/slurmd/job8452523/slurm_script: line 16: 14578 Aborted                 (core dumped) ./elemmat.host -Nelem 1000 -Nmax 40000000

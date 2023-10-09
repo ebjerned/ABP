@@ -22,4 +22,3 @@
 
 
 #endif
-#include <setup/Kokkos_Setup_Cuda.hpp>

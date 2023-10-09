@@ -1,5 +1,5 @@
 KOKKOS_PATH = ${HOME}/ABP/L4/Kokkos/kokkos
-KOKKOS_DEVICES = "OpenMP, Cuda"
+KOKKOS_DEVICES = "OpenMP"
 EXE_NAME = "elemmat"
 
 SRC = $(wildcard *.cpp)

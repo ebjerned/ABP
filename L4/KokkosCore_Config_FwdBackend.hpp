@@ -22,5 +22,4 @@
 
 
 #endif
-#include <fwd/Kokkos_Fwd_CUDA.hpp>
 #include <fwd/Kokkos_Fwd_OPENMP.hpp>

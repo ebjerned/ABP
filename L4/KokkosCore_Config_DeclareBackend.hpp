@@ -22,5 +22,4 @@
 
 
 #endif
-#include <decl/Kokkos_Declare_CUDA.hpp>
 #include <decl/Kokkos_Declare_OPENMP.hpp>

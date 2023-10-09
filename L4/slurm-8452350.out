@@ -1,0 +1,5 @@
+Hello world
+Element calculation test with N = 4239376 Time: 0.0510973 Melement/s: 82 GFLOPS/s: 6.47141 GB/s: 16.5934 Jtransfer timer: 1.078e-05 Atransfer time: 2.792e-06
+Element calculation test with N = 8902689 Time: 0.0913986 Melement/s: 97 GFLOPS/s: 7.59759 GB/s: 19.481 Jtransfer timer: 8.927e-06 Atransfer time: 4.575e-06
+Element calculation test with N = 18695646 Time: 0.206927 Melement/s: 90 GFLOPS/s: 7.04723 GB/s: 18.0698 Jtransfer timer: 9.032e-06 Atransfer time: 1.5487e-05
+Element calculation test with N = 39260856 Time: 0.456349 Melement/s: 86 GFLOPS/s: 6.71054 GB/s: 17.2065 Jtransfer timer: 8.248e-06 Atransfer time: 4.035e-06
