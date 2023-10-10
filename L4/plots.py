@@ -185,7 +185,7 @@ plt.plot(N, column(test_data["CPUTIME"], 20))
 plt.grid()
 plt.ylabel("Time [s]")
 plt.xlabel("No. elements [-]")
-plt.legend(["Jinit-cpu", "Jtransfer-cpu", "Ccompute-cpu", "Ccompute-gpu", "Ctransfer-cpu"])
+plt.legend(["Jinit", "Jtransfer", "Acompute-cpu", "Acompute-gpu", "Atransfer"])
 plt.title("Time comparison on CPU and GPU")
 plt.savefig("T.png")
 
