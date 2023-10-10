@@ -22,8 +22,9 @@ with open(f, "r") as file:
             test_data[curr_key].append(split_line);
             
     file.close()
+
+N = column(test_data["GPUTIME"], 6)
 """
-N = column(test_data["FCR"], 6)
 plt.xscale("log")
 plt.plot(N, column(test_data["FCR"],10))
 plt.plot(N, column(test_data["DCR"],10))
@@ -175,11 +176,12 @@ plt.savefig("TR.png")
 plt.clf()
 plt.xscale("log")
 plt.yscale("log")
-plt.plot(N, column(test_data["CPUTIME", 23))
+
+plt.plot(N, column(test_data["CPUTIME"], 23))
 plt.plot(N, column(test_data["CPUTIME"],17))
 plt.plot(N, column(test_data["CPUTIME"],8))
 plt.plot(N, column(test_data["GPUTIME"],8))
-plt.plot(N, column(test_data["CPUTIME", 20))
+plt.plot(N, column(test_data["CPUTIME"], 20))
 plt.grid()
 plt.ylabel("Time [s]")
 plt.xlabel("No. elements [-]")
