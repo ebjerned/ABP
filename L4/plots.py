@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 ## Rerun with align option
 
-f = "TESTRESULTS.txt"
+f = "TESTRESULTS2.txt"
 count = 0
 data = [];
 test_data = {}
@@ -153,7 +153,7 @@ plt.plot(N, column(test_data["FGL"],8))
 plt.grid()
 plt.ylabel("Time [s]")
 plt.xlabel("No. elements [-]")
-plt.legend(["Jtime-float-cpu-left", "Ctime-float-cpu-left", "Jtime-float-gpu-left", "Jtime-float-gpu-left"])
+plt.legend(["Jtime-float-cpu-left", "Ctime-float-cpu-left", "Jtime-float-gpu-left", "Ctime-float-gpu-left"])
 plt.title("Time comparison on CPU and GPU, Kokkos::LayoutLeft")
 plt.savefig("TL.png")
 
@@ -167,6 +167,6 @@ plt.plot(N, column(test_data["FGL"],8))
 plt.grid()
 plt.ylabel("Time [s]")
 plt.xlabel("No. elements [-]")
-plt.legend(["Jtime-float-cpu-right", "Ctime-float-cpu-right", "Jtime-float-gpu-right", "Jtime-float-gpu-right"])
+plt.legend(["Jtime-float-cpu-right", "Ctime-float-cpu-right", "Jtime-float-gpu-right", "Ctime-float-gpu-right"])
 plt.title("Time comparison on CPU and GPU, Kokkos::LayoutRight")
 plt.savefig("TR.png")
