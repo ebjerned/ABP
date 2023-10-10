@@ -3,19 +3,19 @@ import matplotlib.pyplot as plt
 
 ## Rerun with align option
 
-directory = "C:/Users/Erik Bjerned/Documents/Git_repos/ABP/L1/raw"
+directory = r"raw/"
 count = 0
 for filename in os.listdir(directory):
     f = os.path.join(directory, filename)
     print(f)
     if os.path.isfile(f):
 
-        f = f.replace("\\", "/")
+        #f = f.replace("\\", "/")
 
         data = []
         
         
-        with open(f, "r") as file:
+        with open(f, "r",encoding="utf8") as file:
             for line in file:
                 split_line = line.split()
                 data.append(split_line)
@@ -102,7 +102,7 @@ for filename in os.listdir(directory):
         elif count == 10:
             
             plt.xscale("log")
-            plt.title("Memory alignment -O3, UPPMAX")
+            plt.title("Memory alignment -O2, UPPMAX")
             plt.legend(["Non-aligned", "Aligned"])
             plt.ylabel("Memory throughput [GB/s]")
             plt.xlabel("Vector size N [-]")
@@ -114,7 +114,7 @@ for filename in os.listdir(directory):
             plt.clf()
         elif count == 12:
             plt.xscale("log")
-            plt.title("Memory alignment -O3, AMD R5 3600")
+            plt.title("Memory alignment -O2, AMD R5 3600")
             plt.legend(["Non-aligned", "Aligned"])
             plt.ylabel("Memory throughput [GB/s]")
             plt.xlabel("Vector size N [-]")
