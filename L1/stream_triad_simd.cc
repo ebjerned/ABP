@@ -76,8 +76,7 @@ void benchmark_triad(const bool        align,
     v2[i] = static_cast<float>(rand()) / RAND_MAX;
 
   const unsigned int           n_tests = 20;
-  const unsigned long long int n_repeat =
-    repeat > 0 ? repeat : std::max(1UL, 100000000U / N);
+  const unsigned long long int n_repeat =10;
   double best = 1e10, worst = 0, avg = 0;
   for (unsigned int t = 0; t < n_tests; ++t)
     {

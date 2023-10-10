@@ -1,0 +1,2 @@
+Intrinsics-based vectorization over 8 floats = 256 bits
+/var/spool/slurmd/job8480446/slurm_script: line 11: 47801 Illegal instruction     (core dumped) ./stream_triadSIMD0ALIGN -min 8 -max 1e8 -align 0
