@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 ## Rerun with align option
 
-f = "gputime.txt"
+f = "times.txt"
 count = 0
 data = [];
 test_data = {}
@@ -22,7 +22,7 @@ with open(f, "r") as file:
             test_data[curr_key].append(split_line);
             
     file.close()
-
+"""
 N = column(test_data["FCR"], 6)
 plt.xscale("log")
 plt.plot(N, column(test_data["FCR"],10))
@@ -170,3 +170,23 @@ plt.xlabel("No. elements [-]")
 plt.legend(["Jtime-float-cpu-right", "Ctime-float-cpu-right", "Jtime-float-gpu-right", "Ctime-float-gpu-right"])
 plt.title("Time comparison on CPU and GPU, Kokkos::LayoutRight")
 plt.savefig("TR.png")
+"""
+
+plt.clf()
+plt.xscale("log")
+plt.yscale("log")
+plt.plot(N, column(test_data["CPUTIME", 23))
+plt.plot(N, column(test_data["GPUTIME", 23))
+plt.plot(N, column(test_data["CPUTIME"],17))
+plt.plot(N, column(test_data["GPUTIME"],17))
+plt.plot(N, column(test_data["CPUTIME"],8))
+plt.plot(N, column(test_data["GPUTIME"],8))
+plt.plot(N, column(test_data["CPUTIME", 20))
+plt.plot(N, column(test_data["GPUTIME", 20))
+plt.grid()
+plt.ylabel("Time [s]")
+plt.xlabel("No. elements [-]")
+plt.legend(["Jinit-cpu","Jinit-cpu", "Jtransfer-cpu", "Jtransfer-gpu", "Ccompute-cpu", "Ccompute-gpu", "Ctransfer-cpu", "Ctransfer-gpu"])
+plt.title("Time comparison on CPU and GPU")
+plt.savefig("T.png")
+
