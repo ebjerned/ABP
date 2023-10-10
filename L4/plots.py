@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 ## Rerun with align option
 
-f = "TESTRESULTS2.txt"
+f = "gputime.txt"
 count = 0
 data = [];
 test_data = {}
