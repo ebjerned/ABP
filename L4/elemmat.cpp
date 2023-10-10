@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
 
             using ExecSpaceGPU = MemSpaceGPU::execution_space; 
             using ExecSpaceCPU = MemSpaceCPU::execution_space;
-            typedef float precision_t ;
+            typedef double precision_t ;
             typedef Kokkos::View<precision_t*[3][3], Layout, MemSpaceGPU> ViewJType;
             typedef Kokkos::View<precision_t*[4][4], Layout, MemSpaceGPU> ViewAType;
     
@@ -54,10 +54,12 @@ int main(int argc, char* argv[]){
             ViewAType::HostMirror h_A = Kokkos::create_mirror_view(A);
 
 
+        Kokkos::Timer timer;
         Kokkos::parallel_for("J-assembler",Kokkos::MDRangePolicy<ExecSpaceCPU, Kokkos::Rank<3>>({0,0,0},{N,3,3}), [=] (const int i, const int j, const int k) {
             h_J(i,j,k) = 1;
         });
-
+        Kokkos::fence();
+        double jacobian_init_time = timer.seconds();
         Kokkos::parallel_for("J-assembler2",Kokkos::MDRangePolicy<ExecSpaceCPU, Kokkos::Rank<2>>({0,0},{N,3}), [=] (const int i, const int j) {
             h_J(i,j,j) = 3;
         });
@@ -66,10 +68,10 @@ int main(int argc, char* argv[]){
             h_A(i,j,k) = 0;
         });
 
-        Kokkos::Timer timer;
-        Kokkos::fence();
-        Kokkos::deep_copy(J, h_J);
 
+        timer.reset();
+        Kokkos::deep_copy(J, h_J);
+        Kokkos::fence();
         double jacobian_transfer_time = timer.seconds();
         Kokkos::deep_copy(A, h_A);
         timer.reset();
@@ -102,7 +104,9 @@ int main(int argc, char* argv[]){
             A(i,3,3) = G0 + 2*G1 + 2*G2 + G3 + 2*G4 + G5; // 8 flops
             // 78 flops per element
         });
+
         }
+
         Kokkos::fence();
         double time = timer.seconds();
         timer.reset();
@@ -113,7 +117,7 @@ int main(int argc, char* argv[]){
         float GFLOPS_per_second = 78*N_curr*1e-9/time*n_repeat;
         float GB_per_second = sizeof(precision_t)*(16*N_curr+9*N_curr)*1e-9/time*n_repeat;
 
-        std::cout << "Element calculation test with N = " << N_curr << " Time: " << time/n_repeat << " Melement/s: " << Melements_per_second << " GFLOPS/s: " << GFLOPS_per_second << " GB/s: " << GB_per_second << " Jtransfer timer: " << jacobian_transfer_time << " Atransfer time: " << A_transfer_time << std::endl;
+    std::cout << "Element calculation test with N = " << N_curr << " Time: " << time/n_repeat << " Melement/s: " << Melements_per_second << " GFLOPS/s: " << GFLOPS_per_second << " GB/s: " << GB_per_second << " Jtransfer timer: " << jacobian_transfer_time << " Atransfer time: " << A_transfer_time << " Jinit time: " << jacobian_init_time << std::endl;
 
         }
     }
