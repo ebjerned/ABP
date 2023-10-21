@@ -60,11 +60,11 @@ void benchmark_mat(  const std::size_t M,
   AssertCuda(errorCode);
 
 
-  set_vector<<<(M*N+block_size-1)/block_size, block_size>>>(M*N, 1.f/sqrt(N), A);
+  set_vector_rising<<<(M*N+block_size-1)/block_size, block_size>>>(M*N, 1.f/*/sqrt(N)*/, A);
  
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
-  set_vector<<<(N*K+block_size-1)/block_size, block_size>>>(N*K, 1.f/sqrt(N), B);
+  set_vector<<<(N*K+block_size-1)/block_size, block_size>>>(N*K, 1.f/*/sqrt(N)*/, B);
 
   errorCode = cudaGetLastError();
   AssertCuda(errorCode);
@@ -73,7 +73,7 @@ void benchmark_mat(  const std::size_t M,
   AssertCuda(errorCode);
 
   std::vector<float> result_host(M*K);
-  dim3 gridDim(1,M);
+  dim3 gridDim(ceil(M/block_size),N);
   dim3 blockDim(block_size,1);
   const unsigned int           n_tests = 20;
   const unsigned int n_repeat = 20;
@@ -94,7 +94,7 @@ void benchmark_mat(  const std::size_t M,
 		  float alpha = 1.f;
 		  float beta = 0.f;
 
-		  stat = cublasSgemv(handle, CUBLAS_OP_N,M, N, &alpha, A,M , B,1 ,&beta, C, 1);
+		  stat = cublasSgemv(handle, CUBLAS_OP_T,M, N, &alpha, A,M , B,1 ,&beta, C, 1);
 	  
 
 	  
@@ -115,12 +115,12 @@ void benchmark_mat(  const std::size_t M,
 
 	errorCode = cudaMemcpy(result_host.data(), C, M*K*sizeof(float), cudaMemcpyDeviceToHost);
 	AssertCuda(errorCode);
-/* // Printing for checking correctness
+ // Printing for checking correctness
  for(unsigned int i = 0; i <M*K;++i){
-  	std::cout << result_host[(i*M)%(M*K)+(i/K)] << " ";
+  	std::cout << result_host[(i*M)%(M*K)+(i/K)]*n_repeat << " ";
 	if (i % K == K-1) std::cout << "" << std::endl;
   }
-  
+/*  
   for(unsigned int i = 0; i < M; ++i)
   	std::cout << result_host[i] << std::endl;
 
