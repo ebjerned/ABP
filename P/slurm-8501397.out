@@ -1,0 +1,4 @@
+10000.000000
+298
+Laplace size: 5959999
+/var/spool/slurmd/job8501397/slurm_script: line 12: 49220 Segmentation fault      (core dumped) ./main

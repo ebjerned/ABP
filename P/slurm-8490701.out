@@ -1,1 +1,0 @@
-/var/spool/slurmd/job8490701/slurm_script: line 12: 44191 Segmentation fault      (core dumped) ./main

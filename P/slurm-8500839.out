@@ -1,0 +1,4 @@
+298
+100
+The cuda call in main.cu on line 122resulted in the errro 'an illegal memory access was encountered'
+/var/spool/slurmd/job8500839/slurm_script: line 12:  8095 Aborted                 (core dumped) ./main
