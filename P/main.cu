@@ -13,8 +13,7 @@
     }\
 
 __global__ void prepCELLCSIG(unsigned const int C, unsigned const int sigma, unsigned const int N, int* row_ptr, int* cs_o, int* cl_o);
-template <typename T>
-__global__ void CRStoCELLCSIG(unsigned const int C, unsigned const int sigma, unsigned const int N, T* val, int* col, int* row_ptr, T* val_o,int* col_o, int* cs_o, int* cl_o);
+template <typename T> __global__ void CRStoCELLCSIG(unsigned const int C, unsigned const int sigma, unsigned const int N, T* val, int* col, int* row_ptr, T* val_o,int* col_o, int* cs_o, int* cl_o);
 template <typename T>
 __global__ void assemble1DLaplace(unsigned const int N, T* val, int* col, int* row_ptr);
 
@@ -35,7 +34,6 @@ template <typename T> __global__ void unitVec(unsigned const int N, unsigned con
 template <typename T> __global__ void assembleT(unsigned const int N,T* alpha, T*beta, T* val, int* col, int* row_ptr);
 
 template <typename T, unsigned int blockSize> int lanczosAlg(unsigned const int N);
-template <typename T> int CRStoCCS(unsigned const int N, unsigned const int C, unsigned const int sigma, T* valCRS, int* colCRS, int* rowCRS, T* valCCS, int* colCCS, int* csCCS, int* clCCS);
 template <typename T>__global__ void linvec(unsigned int N, T* vecA, T* vecB, T* res, const T alpha, const T beta);
 template <typename T> void printVector(unsigned const int N, T* vec);
 
@@ -54,11 +52,19 @@ __global__ void set_vector(const int N, const T val, T* vec){
 int main(int argc, char* argv[]){
     
     unsigned const int N = 100;
+
+    if(argc != 2){
+        std::cout << "Usage ./lanczos N" << std::endl;
+    } else {
+        
+   unsigned const int N = atoi(argv[1]); 
+        lanczosAlg<float, 32>(N);
+    }
 /*
     for(unsigned int i = 10; i < 250; i=i*1.1){
         lanczosAlg<double, 32>(i);
     }*/
-        lanczosAlg<double, 32>(20);
+
     return 0;
 }
 
@@ -66,7 +72,7 @@ int main(int argc, char* argv[]){
 template <typename T, unsigned int blockSize>
 int lanczosAlg(unsigned const int N){
 
-    int mode = 1;
+    int mode = 0;
     T *LAP_VAL_D, *I_VAL_D,*RES_VAL, *TERM1_VAL, *TERM2_VAL, *HLF_VAL, *FIN_VAL;
     int* LAP_COL_D, *LAP_ROW_D, *I_COL_D, *I_ROW_D, *RES_COL, *RES_ROW, *TERM1_COL, *TERM1_ROW, *TERM2_COL, *TERM2_ROW,*HLF_COL, *HLF_ROW, *FIN_COL, *FIN_ROW;
 
@@ -160,10 +166,10 @@ int lanczosAlg(unsigned const int N){
 
     int rec_size;
     assertCuda(cudaMemcpy(&rec_size, &FIN_ROW[N*N*N], sizeof(int), cudaMemcpyDeviceToHost));
-    printf("Laplace size: %i\n", rec_size);
+   // printf("Laplace size: %i\n", rec_size);
     const double lape = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-lapb).count();
 
-    double* CCS_VAL;
+    T* CCS_VAL;
     int* CCS_COL, *CCS_CS, *CCS_CL;
 
     
@@ -173,12 +179,15 @@ int lanczosAlg(unsigned const int N){
     dim3 convDim(1, n_chunks);
 
 
-
-    assertCuda(cudaMalloc((void**) &CCS_CL, n_chunks*sizeof(int)));
-    assertCuda(cudaMalloc((void**) &CCS_CS, (n_chunks+1)*sizeof(int)));
-    assertCuda(cudaMalloc((void**) &CCS_VAL, (int)1.1*rec_size*sizeof(T))); // Account for padding
-    assertCuda(cudaMalloc((void**) &CCS_COL, (int)1.1*rec_size*sizeof(int)));
+    if(mode){
+        assertCuda(cudaMalloc((void**) &CCS_CL, n_chunks*sizeof(int)));
+        assertCuda(cudaMalloc((void**) &CCS_CS, (n_chunks+1)*sizeof(int)));
+        assertCuda(cudaMalloc((void**) &CCS_VAL, (int)1.1*rec_size*sizeof(T))); // Account for padding
+        assertCuda(cudaMalloc((void**) &CCS_COL, (int)1.1*rec_size*sizeof(int)));
+    }
     const auto cellcb = std::chrono::steady_clock::now(); 
+    cudaDeviceSynchronize();
+    
     if (mode){
         prepCELLCSIG<<<1, blockDim, blockSize>>>(C, 1,N*N*N, FIN_ROW, CCS_CS, CCS_CL);
         CRStoCELLCSIG<T><<<convDim, blockDim>>>(C, 1, N*N*N, FIN_VAL, FIN_COL, FIN_ROW, CCS_VAL, CCS_COL, CCS_CS, CCS_CL);
@@ -186,13 +195,13 @@ int lanczosAlg(unsigned const int N){
     const double cellce = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-cellcb).count();
 
     T* V, *Vp, *W, *A_vec, *B_vec, *a, *b;
-    cudaMalloc((void**) &V, N*N*N*sizeof(T));
-    cudaMalloc((void**) &Vp, N*N*N*sizeof(T));
-    cudaMalloc((void**) &W, N*N*N*sizeof(T));
-    cudaMalloc((void**) &A_vec, N*N*N*sizeof(T));
-    cudaMalloc((void**) &B_vec, N*N*N*sizeof(T));
-    cudaMalloc((void**) &a, sizeof(T));
-    cudaMalloc((void**) &b, sizeof(T));
+    assertCuda(cudaMalloc((void**) &V, N*N*N*sizeof(T)));
+    assertCuda(cudaMalloc((void**) &Vp, N*N*N*sizeof(T)));
+    assertCuda(cudaMalloc((void**) &W, N*N*N*sizeof(T)));
+    assertCuda(cudaMalloc((void**) &A_vec, N*N*N*sizeof(T)));
+    assertCuda(cudaMalloc((void**) &B_vec, N*N*N*sizeof(T)));
+    assertCuda(cudaMalloc((void**) &a, sizeof(T)));
+    assertCuda(cudaMalloc((void**) &b, sizeof(T)));
 
 
     T alpha, beta;
@@ -227,8 +236,8 @@ int lanczosAlg(unsigned const int N){
     for(unsigned int j = 0; j < 20*N; j++){
         
   //      const auto sqb = std::chrono::steady_clock::now();
-//        squareSum<T><<<kronDim2, blockDim, C>>>(N*N*N, W, &B_vec[j]);
-        dot<T><<<kronDim2, blockDim, blockSize>>>(N*N*N, W, W, &B_vec[j]);
+          squareSum<T><<<kronDim2, blockDim, C>>>(N*N*N, W, &B_vec[j]);
+//        dot<T><<<kronDim2, blockDim, blockSize>>>(N*N*N, W, W, &B_vec[j]);
 //        sqe += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-sqb).count();
 
         cudaMemcpy(&beta, &B_vec[j], sizeof(T), cudaMemcpyDeviceToHost);
@@ -280,8 +289,8 @@ int lanczosAlg(unsigned const int N){
     T *A, *B;
     A = (T*) malloc(20*N*sizeof(T));
     B = (T*) malloc((20*N-1)*sizeof(T));
-    //assertCuda(cudaMemcpy(A, A_vec, 20*N*sizeof(T), cudaMemcpyDeviceToHost));
-    //assertCuda(cudaMemcpy(B, B_vec, (20*N-1)*sizeof(T), cudaMemcpyDeviceToHost));
+    cudaMemcpy(A, A_vec, 20*N*sizeof(T), cudaMemcpyDeviceToHost);
+    cudaMemcpy(B, B_vec, (20*N-1)*sizeof(T), cudaMemcpyDeviceToHost);
 
 
 //    printVector<T>(20*N-1, A);
@@ -299,7 +308,7 @@ int lanczosAlg(unsigned const int N){
     }
     //std::cout << N <<"\t"<< lape << "\t" << cellce << /*"\t" <<unite <<*/ "\t" << mate << "\t" << BW << /*"\t" << dote << "\t"<< line << "\t" << sqe <<*/ "\t" << lanczose << std::endl;
     std::cout << N << "," << rec_size  << "," << lape << ","  << cellce << "," << BW << "," << lanczose << std::endl;
-//    std::cout << N << "," << rec_size << "," << lape << ", " << cellce << "," << unite << "," << mate << "," << dote << "," << line << "," << BW << lanczose << std::endl;
+//t     std::cout << N << "," << rec_size << "," << lape << ", " << cellce << "," << unite << "," << mate << "," << dote << "," << line << "," << BW << lanczose << std::endl;
     cudaFree(W);
     cudaFree(V);
     cudaFree(Vp);
@@ -308,10 +317,12 @@ int lanczosAlg(unsigned const int N){
     cudaFree(FIN_VAL);
     cudaFree(FIN_COL);
     cudaFree(FIN_ROW);
-    cudaFree(CCS_VAL);
-    cudaFree(CCS_COL);
-    cudaFree(CCS_CS);
-    cudaFree(CCS_CL);
+    if(mode){
+        cudaFree(CCS_VAL);
+        cudaFree(CCS_COL);
+        cudaFree(CCS_CS);
+        cudaFree(CCS_CL);
+    }
     cudaFree(a);
     cudaFree(b);
     free(A);
@@ -526,7 +537,7 @@ __global__ void CRStoCELLCSIG(unsigned const int C, unsigned const int sigma, un
         for(unsigned int k = 0; k < cl[bid]; ++k){
                 if((k > (row_ptr[tid+1]-row_ptr[tid]-1)) || (tid+1) > N){
                     val_o[cs[bid]+k*C+threadIdx.y] = 0.0;
-                    col_o[cs[bid]+k*C+threadIdx.y] = col_o[cs[bid]+threadIdx.y];
+                    col_o[cs[bid]+k*C+threadIdx.y] = col[row_ptr[tid]];
 
 
                 } else{
