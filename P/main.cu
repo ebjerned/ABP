@@ -54,10 +54,11 @@ __global__ void set_vector(const int N, const T val, T* vec){
 int main(int argc, char* argv[]){
     
     unsigned const int N = 100;
-
-    for(unsigned int i = 20; i < 125; i=i*1.1){
+/*
+    for(unsigned int i = 10; i < 250; i=i*1.1){
         lanczosAlg<double, 32>(i);
-    }
+    }*/
+        lanczosAlg<double, 32>(20);
     return 0;
 }
 
@@ -65,6 +66,7 @@ int main(int argc, char* argv[]){
 template <typename T, unsigned int blockSize>
 int lanczosAlg(unsigned const int N){
 
+    int mode = 1;
     T *LAP_VAL_D, *I_VAL_D,*RES_VAL, *TERM1_VAL, *TERM2_VAL, *HLF_VAL, *FIN_VAL;
     int* LAP_COL_D, *LAP_ROW_D, *I_COL_D, *I_ROW_D, *RES_COL, *RES_ROW, *TERM1_COL, *TERM1_ROW, *TERM2_COL, *TERM2_ROW,*HLF_COL, *HLF_ROW, *FIN_COL, *FIN_ROW;
 
@@ -99,9 +101,9 @@ int lanczosAlg(unsigned const int N){
     cudaMalloc((void**) &HLF_ROW, (N*N*N+1)*sizeof(int));
 
 
-    cudaMalloc((void**) &FIN_VAL, 6*N*N*N*sizeof(T));
-    cudaMalloc((void**) &FIN_COL, 6*N*N*N*sizeof(int));
-    cudaMalloc((void**) &FIN_ROW, (N*N*N+1)*sizeof(int));
+    assertCuda(cudaMalloc((void**) &FIN_VAL, 6*N*N*N*sizeof(T)));
+    assertCuda(cudaMalloc((void**) &FIN_COL, 6*N*N*N*sizeof(int)));
+    assertCuda(cudaMalloc((void**) &FIN_ROW, (N*N*N+1)*sizeof(int)));
 
     const auto lapb = std::chrono::steady_clock::now();
     assemble1DLaplace<T><<<gridDim, blockDim>>>(N, LAP_VAL_D, LAP_COL_D, LAP_ROW_D);
@@ -170,7 +172,7 @@ int lanczosAlg(unsigned const int N){
 
     dim3 convDim(1, n_chunks);
 
-    int mode = 0;
+
 
     assertCuda(cudaMalloc((void**) &CCS_CL, n_chunks*sizeof(int)));
     assertCuda(cudaMalloc((void**) &CCS_CS, (n_chunks+1)*sizeof(int)));
@@ -178,8 +180,8 @@ int lanczosAlg(unsigned const int N){
     assertCuda(cudaMalloc((void**) &CCS_COL, (int)1.1*rec_size*sizeof(int)));
     const auto cellcb = std::chrono::steady_clock::now(); 
     if (mode){
-    prepCELLCSIG<<<1, blockDim, C>>>(C, 1,N*N*N, FIN_ROW, CCS_CS, CCS_CL);
-    CRStoCELLCSIG<T><<<convDim, blockDim>>>(C, 1, N*N*N, FIN_VAL, FIN_COL, FIN_ROW, CCS_VAL, CCS_COL, CCS_CS, CCS_CL);
+        prepCELLCSIG<<<1, blockDim, blockSize>>>(C, 1,N*N*N, FIN_ROW, CCS_CS, CCS_CL);
+        CRStoCELLCSIG<T><<<convDim, blockDim>>>(C, 1, N*N*N, FIN_VAL, FIN_COL, FIN_ROW, CCS_VAL, CCS_COL, CCS_CS, CCS_CL);
     }
     const double cellce = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-cellcb).count();
 
@@ -201,7 +203,7 @@ int lanczosAlg(unsigned const int N){
     unitVec<T><<<kronDim2, blockDim>>>(N*N*N, 0, Vp);
 //    double unite = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-unitb).count();
      
-    //const auto matb = std::chrono::steady_clock::now();
+    const auto matb = std::chrono::steady_clock::now();
     if (mode){
         matvecCELLCSIGMA<T><<<kronDim2, blockDim>>>(N*N*N, C, CCS_VAL, CCS_COL, CCS_CS, CCS_CL, Vp, W);
     }else {
@@ -209,10 +211,10 @@ int lanczosAlg(unsigned const int N){
 
     }
     
-  //  double mate = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-matb).count();
+    double mate = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-matb).count();
 
 //    const auto dotb = std::chrono::steady_clock::now();
-    dot<T><<<kronDim2, blockDim,C>>>(N*N*N, W, Vp, &A_vec[0]);
+    dot<T><<<kronDim2, blockDim, blockSize>>>(N*N*N, W, Vp, &A_vec[0]);
   //  double dote = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-dotb).count();
     cudaMemcpy(&alpha, &A_vec[0], sizeof(T), cudaMemcpyDeviceToHost);
 
@@ -222,12 +224,11 @@ int lanczosAlg(unsigned const int N){
 
 
     
-    double sqe = 0;
     for(unsigned int j = 0; j < 20*N; j++){
         
-        
   //      const auto sqb = std::chrono::steady_clock::now();
-        squareSum<T><<<kronDim2, blockDim, C>>>(N*N*N, W, &B_vec[j]);
+//        squareSum<T><<<kronDim2, blockDim, C>>>(N*N*N, W, &B_vec[j]);
+        dot<T><<<kronDim2, blockDim, blockSize>>>(N*N*N, W, W, &B_vec[j]);
 //        sqe += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-sqb).count();
 
         cudaMemcpy(&beta, &B_vec[j], sizeof(T), cudaMemcpyDeviceToHost);
@@ -243,18 +244,18 @@ int lanczosAlg(unsigned const int N){
           //  unite += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-unitb).count();
         }   
 
-        //const auto matb = std::chrono::steady_clock::now();
+      //  const auto matb = std::chrono::steady_clock::now();
         if(mode){
             matvecCELLCSIGMA<T><<<kronDim2, blockDim>>>(N*N*N, C, CCS_VAL, CCS_COL, CCS_CS, CCS_CL, V,W);
         } else {
             matvecCRS<T><<<kronDim2, blockDim>>>(N*N*N, FIN_VAL, FIN_COL, FIN_ROW, V,W);
         }
         
-        //mate += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-matb).count();
+    //    mate += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-matb).count();
         
         
         //const auto dotb = std::chrono::steady_clock::now();
-        dot<T><<<kronDim2, blockDim, C>>>(N*N*N, W, Vp, &A_vec[j]);
+        dot<T><<<kronDim2, blockDim, blockSize>>>(N*N*N, W, Vp, &A_vec[j]);
     //    dote += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-dotb).count();
         
         
@@ -279,15 +280,26 @@ int lanczosAlg(unsigned const int N){
     T *A, *B;
     A = (T*) malloc(20*N*sizeof(T));
     B = (T*) malloc((20*N-1)*sizeof(T));
-    assertCuda(cudaMemcpy(A, A_vec, 20*N*sizeof(T), cudaMemcpyDeviceToHost));
-    assertCuda(cudaMemcpy(B, B_vec, (20*N-1)*sizeof(T), cudaMemcpyDeviceToHost));
+    //assertCuda(cudaMemcpy(A, A_vec, 20*N*sizeof(T), cudaMemcpyDeviceToHost));
+    //assertCuda(cudaMemcpy(B, B_vec, (20*N-1)*sizeof(T), cudaMemcpyDeviceToHost));
 
 
 //    printVector<T>(20*N-1, A);
 
 //    printCRS_matrix(20*N, val, col, row);
 //    std::cout << "N:\tLaplacian\tCRStoCELLCS\tUnitVec\tMatVec\tDot\tLinOp\tSquareSum\tLanczosTOT" <<std::endl;
-    std::cout << N <<"\t"<< lape << "\t" << cellce << /*"\t" <<unite << "\t" << mate << "\t" << dote << "\t"<< line << "\t" << sqe <<*/ "\t" << lanczose << std::endl;
+    
+    double BW =0; 
+    if(mode){
+            // VAL, COL, CS, CL, VEC, RES
+         BW = 1e-9*20*N*((rec_size+14*N*N*N)*sizeof(T)+(2*n_chunks+N*N*N)*sizeof(int))/lanczose;
+    }else{
+            // VAL, COL, ROW, VEC, RES
+         BW = 1e-9*20*N*((rec_size+14*N*N*N)*sizeof(T)+(rec_size+N*N*N)*sizeof(int))/lanczose;
+    }
+    //std::cout << N <<"\t"<< lape << "\t" << cellce << /*"\t" <<unite <<*/ "\t" << mate << "\t" << BW << /*"\t" << dote << "\t"<< line << "\t" << sqe <<*/ "\t" << lanczose << std::endl;
+    std::cout << N << "," << rec_size  << "," << lape << ","  << cellce << "," << BW << "," << lanczose << std::endl;
+//    std::cout << N << "," << rec_size << "," << lape << ", " << cellce << "," << unite << "," << mate << "," << dote << "," << line << "," << BW << lanczose << std::endl;
     cudaFree(W);
     cudaFree(V);
     cudaFree(Vp);
@@ -331,7 +343,6 @@ __global__ void assemble1DLaplace(unsigned const int N, T* val, int* col, int* r
     
     if(diag==N-1){
         row_ptr[N] = 3*N-2;
-        printf("%i\n", row_ptr[N]); 
     }
     return;
 }
@@ -672,7 +683,6 @@ __global__ void assembleT(unsigned const int N,T* alpha, T*beta, T* val, int* co
     
     if(diag==N-1){
         row_ptr[N] = 3*N-2;
-        printf("%i\n", row_ptr[N]); 
     }
     return;
 }
