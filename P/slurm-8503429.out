@@ -1,0 +1,180 @@
+58
+Laplace size: 46369
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+20	0.0041689	7.7e-08	0.0248999
+64
+Laplace size: 61906
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+22	0.00534365	5.1e-08	0.027658
+70
+Laplace size: 80582
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+24	0.00656183	5.8e-08	0.0301141
+76
+Laplace size: 102682
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+26	0.0084743	6.6e-08	0.0346237
+82
+Laplace size: 128501
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+28	0.0102576	7e-08	0.0500734
+88
+Laplace size: 158330
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+30	0.0130498	8e-08	0.0465251
+97
+Laplace size: 211205
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+33	0.0112268	7.2e-08	0.0446946
+106
+Laplace size: 274707
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+36	0.0144201	1.1e-07	0.0598296
+115
+Laplace size: 349801
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+39	0.0181446	1.22e-07	0.0690999
+124
+Laplace size: 437447
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+42	0.0187781	1.22e-07	0.0827356
+136
+Laplace size: 575430
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+46	0.0242069	1.17e-07	0.100718
+148
+Laplace size: 739999
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+50	0.0307564	1.03e-07	0.130738
+163
+Laplace size: 986117
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+55	0.0407212	8.5e-08	0.173879
+178
+Laplace size: 1281599
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+60	0.0536322	7.9e-08	0.22968
+196
+Laplace size: 1707551
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+66	0.0730751	8.7e-08	0.333876
+214
+Laplace size: 2218751
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+72	0.0955275	8.6e-08	0.471898
+235
+Laplace size: 2933269
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+79	0.127797	9.3e-08	0.667351
+256
+Laplace size: 3786751
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+86	0.167347	8.6e-08	0.919191
+280
+Laplace size: 4948159
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+94	0.223912	8.1e-08	1.28813
+307
+Laplace size: 6513925
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+103	0.291742	8e-08	1.83586
+337
+Laplace size: 8606305
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+113	0.391397	8.2e-08	2.63085
+370
+Laplace size: 11378239
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+124	0.517805	9.9e-08	3.7885
+406
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+136	0.0122519	1.98e-07	0.0729637
+445
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+149	0.0130594	1.13e-07	0.0639504
+487
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+163	0.0143135	1.14e-07	0.0704622
+535
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+179	0.0161215	1.11e-07	0.0771258
+586
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+196	0.0169315	1.44e-07	0.0841804
+643
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+215	0.0199162	1.16e-07	0.0793453
+706
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+236	0.0226113	8.1e-08	0.118257
+775
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+259	0.0283226	1.33e-07	0.115603
+850
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+284	0.0307339	1.11e-07	0.127498
+934
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+312	0.0360314	1.04e-07	0.12936
+1027
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+343	0.0431882	8.2e-08	0.128587
+1129
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+377	0.0591797	1.26e-07	0.171511
+1240
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+414	0.0564559	1.33e-07	0.185695
+1363
+Laplace size: 0
+Starting loop
+N:	Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+455	0.0922259	1.48e-07	0.212692

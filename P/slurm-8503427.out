@@ -1,0 +1,5 @@
+298
+Laplace size: 5959999
+Starting loop
+Laplacian	CRStoCELLCS	UnitVec	MatVec	Dot	LinOp	SquareSum	LanczosTOT
+0.390944	1.18e-07	1.63506

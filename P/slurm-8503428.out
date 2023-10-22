@@ -1,0 +1,5 @@
+7
+Laplace size: 125
+Starting loop
+The cuda call in main.cu on line 283resulted in the errro 'invalid argument'
+/var/spool/slurmd/job8503428/slurm_script: line 12: 55829 Aborted                 (core dumped) ./main
