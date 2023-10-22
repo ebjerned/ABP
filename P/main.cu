@@ -58,7 +58,7 @@ int main(int argc, char* argv[]){
     } else {
         
    unsigned const int N = atoi(argv[1]); 
-        lanczosAlg<float, 32>(N);
+        lanczosAlg<double, 32>(N);
     }
 /*
     for(unsigned int i = 10; i < 250; i=i*1.1){
@@ -208,9 +208,9 @@ int lanczosAlg(unsigned const int N){
 
 
     const auto lanczosb = std::chrono::steady_clock::now();
-//    const auto unitb = std::chrono::steady_clock::now();
+    const auto unitb = std::chrono::steady_clock::now();
     unitVec<T><<<kronDim2, blockDim>>>(N*N*N, 0, Vp);
-//    double unite = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-unitb).count();
+    double unite = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-unitb).count();
      
     const auto matb = std::chrono::steady_clock::now();
     if (mode){
@@ -222,59 +222,59 @@ int lanczosAlg(unsigned const int N){
     
     double mate = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-matb).count();
 
-//    const auto dotb = std::chrono::steady_clock::now();
+    const auto dotb = std::chrono::steady_clock::now();
     dot<T><<<kronDim2, blockDim, blockSize>>>(N*N*N, W, Vp, &A_vec[0]);
-  //  double dote = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-dotb).count();
+    double dote = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-dotb).count();
     cudaMemcpy(&alpha, &A_vec[0], sizeof(T), cudaMemcpyDeviceToHost);
 
-//    const auto linb = std::chrono::steady_clock::now();
+    const auto linb = std::chrono::steady_clock::now();
     linvec<T><<<kronDim2, blockDim>>>(N*N*N, W, Vp, W, 1, -alpha);
-    //double line = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-linb).count();
+    double line = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-linb).count();
 
 
     
     for(unsigned int j = 0; j < 20*N; j++){
         
-  //      const auto sqb = std::chrono::steady_clock::now();
+        const auto sqb = std::chrono::steady_clock::now();
           squareSum<T><<<kronDim2, blockDim, C>>>(N*N*N, W, &B_vec[j]);
 //        dot<T><<<kronDim2, blockDim, blockSize>>>(N*N*N, W, W, &B_vec[j]);
-//        sqe += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-sqb).count();
+        dote += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-sqb).count();
 
         cudaMemcpy(&beta, &B_vec[j], sizeof(T), cudaMemcpyDeviceToHost);
         beta = sqrt(beta);
          
         if(beta != 0){
-             //   const auto linb = std::chrono::steady_clock::now();
+                const auto linb = std::chrono::steady_clock::now();
                 linvec<T><<<kronDim2, blockDim>>>(N*N*N, W, W, V, 0, 1/beta);
-              //  line += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-linb).count();
+                line += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-linb).count();
         }else{
-           // const auto unitb = std::chrono::steady_clock::now();
+           const auto unitb = std::chrono::steady_clock::now();
             unitVec<T><<<kronDim2, blockDim>>>(N*N*N, j, V);
-          //  unite += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-unitb).count();
+            unite += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-unitb).count();
         }   
 
-      //  const auto matb = std::chrono::steady_clock::now();
+        const auto matb = std::chrono::steady_clock::now();
         if(mode){
             matvecCELLCSIGMA<T><<<kronDim2, blockDim>>>(N*N*N, C, CCS_VAL, CCS_COL, CCS_CS, CCS_CL, V,W);
         } else {
             matvecCRS<T><<<kronDim2, blockDim>>>(N*N*N, FIN_VAL, FIN_COL, FIN_ROW, V,W);
         }
         
-    //    mate += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-matb).count();
+        mate += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-matb).count();
         
         
-        //const auto dotb = std::chrono::steady_clock::now();
+        const auto dotb = std::chrono::steady_clock::now();
         dot<T><<<kronDim2, blockDim, blockSize>>>(N*N*N, W, Vp, &A_vec[j]);
-    //    dote += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-dotb).count();
+        dote += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-dotb).count();
         
         
         cudaMemcpy(&alpha, &A_vec[j], sizeof(T), cudaMemcpyDeviceToHost);
         
         
-  //      const auto linb = std::chrono::steady_clock::now();
+      const auto linb = std::chrono::steady_clock::now();
         linvec<T><<<kronDim2, blockDim>>>(N*N*N, V, Vp, V, -alpha, -beta);
         linvec<T><<<kronDim2, blockDim>>>(N*N*N, W, V, W, 1, 1);
-//        line += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-linb).count();
+        line += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-linb).count();
 
     }
 
@@ -307,8 +307,8 @@ int lanczosAlg(unsigned const int N){
          BW = 1e-9*20*N*((rec_size+14*N*N*N)*sizeof(T)+(rec_size+N*N*N)*sizeof(int))/lanczose;
     }
     //std::cout << N <<"\t"<< lape << "\t" << cellce << /*"\t" <<unite <<*/ "\t" << mate << "\t" << BW << /*"\t" << dote << "\t"<< line << "\t" << sqe <<*/ "\t" << lanczose << std::endl;
-    std::cout << N << "," << rec_size  << "," << lape << ","  << cellce << "," << BW << "," << lanczose << std::endl;
-//t     std::cout << N << "," << rec_size << "," << lape << ", " << cellce << "," << unite << "," << mate << "," << dote << "," << line << "," << BW << lanczose << std::endl;
+    //std::cout << N << "," << rec_size  << "," << lape << ","  << cellce << "," << BW << "," << lanczose << std::endl;
+    std::cout << N << "," << rec_size << "," << lape << ", " << cellce << "," << unite << "," << mate << "," << dote << "," << line << "," << BW << lanczose << std::endl;
     cudaFree(W);
     cudaFree(V);
     cudaFree(Vp);
