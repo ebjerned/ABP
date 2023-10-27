@@ -63,8 +63,8 @@ int main(int argc, char* argv[]){
 /*
     for(unsigned int i = 10; i < 250; i=i*1.1){
         lanczosAlg<double, 32>(i);
-    }*/
-
+    }
+*/
     return 0;
 }
 
@@ -102,13 +102,13 @@ int lanczosAlg(unsigned const int N){
     cudaMalloc((void**) &TERM2_COL, 3*N*N*N*sizeof(int));
     cudaMalloc((void**) &TERM2_ROW, (N*N*N+1)*sizeof(int));
     
-    cudaMalloc((void**) &HLF_VAL, 6*N*N*N*sizeof(T));
-    cudaMalloc((void**) &HLF_COL, 6*N*N*N*sizeof(int));
+    cudaMalloc((void**) &HLF_VAL, 7*N*N*N*sizeof(T));
+    cudaMalloc((void**) &HLF_COL, 7*N*N*N*sizeof(int));
     cudaMalloc((void**) &HLF_ROW, (N*N*N+1)*sizeof(int));
 
 
-    assertCuda(cudaMalloc((void**) &FIN_VAL, 6*N*N*N*sizeof(T)));
-    assertCuda(cudaMalloc((void**) &FIN_COL, 6*N*N*N*sizeof(int)));
+    assertCuda(cudaMalloc((void**) &FIN_VAL, 7*N*N*N*sizeof(T)));
+    assertCuda(cudaMalloc((void**) &FIN_COL, 7*N*N*N*sizeof(int)));
     assertCuda(cudaMalloc((void**) &FIN_ROW, (N*N*N+1)*sizeof(int)));
 
     const auto lapb = std::chrono::steady_clock::now();
@@ -302,13 +302,13 @@ int lanczosAlg(unsigned const int N){
     
     double BW =0; 
     if(mode){
-            // VAL, COL, CS, CL, VEC, RES
+            // VAL (T), COL (int), CS(int), CL(int), VEC(T), RES(T)
    //      BW = 1e-9*20*N*((rec_size+14*N*N*N)*sizeof(T)+(2*n_chunks+N*N*N)*sizeof(int))/lanczose;
-         BW = 1e-9*20*N*((rec_size+N*N*N)*sizeof(T)+(2/C+1)*N*N*N*sizeof(int))/mate;
+         BW = 1e-9*20*N*((rec_size+2*N*N*N)*sizeof(T)+(2.f/C*N*N*N+rec_size)*sizeof(int))/mate;
     }else{
-            // VAL, COL, ROW, VEC, RES
+            // VAL (T), COL (int), ROW(int), VEC(T), RES(T)
          //BW = 1e-9*20*N*((rec_size+14*N*N*N)*sizeof(T)+(rec_size+N*N*N)*sizeof(int))/lanczose;
-         BW = 1e-9*20*N*((rec_size+N*N*N)*sizeof(T) + (rec_size+N*N*N)*sizeof(int))/mate;
+         BW = 1e-9*20*N*((rec_size+2*N*N*N)*sizeof(T) + (rec_size+N*N*N)*sizeof(int))/mate;
 
     }
     //std::cout << N <<"\t"<< lape << "\t" << cellce << /*"\t" <<unite <<*/ "\t" << mate << "\t" << BW << /*"\t" << dote << "\t"<< line << "\t" << sqe <<*/ "\t" << lanczose << std::endl;
