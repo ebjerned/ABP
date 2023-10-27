@@ -52,19 +52,19 @@ __global__ void set_vector(const int N, const T val, T* vec){
 int main(int argc, char* argv[]){
     
     unsigned const int N = 100;
-
+/*
     if(argc != 2){
         std::cout << "Usage ./lanczos N" << std::endl;
     } else {
         
    unsigned const int N = atoi(argv[1]); 
         lanczosAlg<float, 32>(N);
-    }
-/*
-    for(unsigned int i = 10; i < 250; i=i*1.1){
+    }*/
+
+    for(unsigned int i = 10; i < 125; ++i){
         lanczosAlg<double, 32>(i);
     }
-*/
+
     return 0;
 }
 
@@ -182,15 +182,25 @@ int lanczosAlg(unsigned const int N){
     if(mode){
         assertCuda(cudaMalloc((void**) &CCS_CL, n_chunks*sizeof(int)));
         assertCuda(cudaMalloc((void**) &CCS_CS, (n_chunks+1)*sizeof(int)));
-        assertCuda(cudaMalloc((void**) &CCS_VAL, (int)1.1*rec_size*sizeof(T))); // Account for padding
-        assertCuda(cudaMalloc((void**) &CCS_COL, (int)1.1*rec_size*sizeof(int)));
+
     }
     const auto cellcb = std::chrono::steady_clock::now(); 
     cudaDeviceSynchronize();
     
+    int CCS_rec_size;
     if (mode){
         prepCELLCSIG<<<1, blockDim, blockSize>>>(C, 1,N*N*N, FIN_ROW, CCS_CS, CCS_CL);
+        cudaDeviceSynchronize();
+
+        assertCuda(cudaMemcpy(&CCS_rec_size, &CCS_CS[n_chunks], sizeof(int),cudaMemcpyDeviceToHost));
+        cudaDeviceSynchronize();
+        assertCuda(cudaMalloc((void**) &CCS_VAL, CCS_rec_size*sizeof(T))); // Account for padding
+        assertCuda(cudaMalloc((void**) &CCS_COL, CCS_rec_size*sizeof(int)));
+        cudaDeviceSynchronize();
         CRStoCELLCSIG<T><<<convDim, blockDim>>>(C, 1, N*N*N, FIN_VAL, FIN_COL, FIN_ROW, CCS_VAL, CCS_COL, CCS_CS, CCS_CL);
+        cudaDeviceSynchronize();
+//        int* test = (int*) malloc(2*rec_size*sizeof(int));
+//        assertCuda(cudaMemcpy(test, CCS_COL, 2*rec_size*sizeof(int), cudaMemcpyDeviceToHost));
     }
     const double cellce = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-cellcb).count();
 
@@ -295,7 +305,7 @@ int lanczosAlg(unsigned const int N){
     cudaMemcpy(B, B_vec, (20*N-1)*sizeof(T), cudaMemcpyDeviceToHost);
 
 
-//    printVector<T>(20*N-1, A);
+
 
 //    printCRS_matrix(20*N, val, col, row);
 //    std::cout << "N:\tLaplacian\tCRStoCELLCS\tUnitVec\tMatVec\tDot\tLinOp\tSquareSum\tLanczosTOT" <<std::endl;
@@ -304,15 +314,19 @@ int lanczosAlg(unsigned const int N){
     if(mode){
             // VAL (T), COL (int), CS(int), CL(int), VEC(T), RES(T)
    //      BW = 1e-9*20*N*((rec_size+14*N*N*N)*sizeof(T)+(2*n_chunks+N*N*N)*sizeof(int))/lanczose;
-         BW = 1e-9*20*N*((rec_size+2*N*N*N)*sizeof(T)+(2.f/C*N*N*N+rec_size)*sizeof(int))/mate;
+         BW = 1e-9*20*N*((CCS_rec_size+2*N*N*N)*sizeof(T)+(2.f/C*N*N*N+CCS_rec_size)*sizeof(int))/mate;
+    std::cout << N << "," << CCS_rec_size  << "," << lape << ","  << cellce << "," << BW << "," << mate << "," << lanczose << std::endl;
     }else{
             // VAL (T), COL (int), ROW(int), VEC(T), RES(T)
          //BW = 1e-9*20*N*((rec_size+14*N*N*N)*sizeof(T)+(rec_size+N*N*N)*sizeof(int))/lanczose;
          BW = 1e-9*20*N*((rec_size+2*N*N*N)*sizeof(T) + (rec_size+N*N*N)*sizeof(int))/mate;
+    std::cout << N << "," << rec_size  << "," << lape << ","  << cellce << "," << BW << "," << mate << "," << lanczose << std::endl;
 
     }
+
+   // if(N == 124) printVector<T>(20*N-1, A);
     //std::cout << N <<"\t"<< lape << "\t" << cellce << /*"\t" <<unite <<*/ "\t" << mate << "\t" << BW << /*"\t" << dote << "\t"<< line << "\t" << sqe <<*/ "\t" << lanczose << std::endl;
-    std::cout << N << "," << rec_size  << "," << lape << ","  << cellce << "," << BW << "," << mate << "," << lanczose << std::endl;
+
 //    std::cout << N << "," << rec_size << "," << lape << ", " << cellce << "," << unite << "," << mate << "," << dote << "," << line << "," << BW << lanczose << std::endl;
     cudaFree(W);
     cudaFree(V);
