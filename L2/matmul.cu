@@ -109,7 +109,7 @@ __global__ void matmat(const float* A, const float* B, float* C, unsigned const 
     }
 }
 template <unsigned int blockSize>
-__global__ void matvec_old(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N	){
+__global__ void matvec(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N	){
     __shared__ float sdata[blockSize];
 
     int col = (blockDim.x*2)*blockIdx.x + threadIdx.x;
@@ -136,7 +136,7 @@ __global__ void matvec_old(const float* A, const float* B, float* C, unsigned co
 
 }
 template <unsigned int blockSize>
-__global__ void matvec(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N){
+__global__ void matvec_old(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N){
     __shared__ float sdata[blockSize];
     int col = blockDim.x*blockIdx.x + threadIdx.x;
     int row = blockDim.y*2*blockIdx.y + threadIdx.y;
@@ -283,8 +283,8 @@ void benchmark_mat(  const std::size_t M,
 
   std::vector<float> result_host(M*K);
   
-  dim3 gridDim(N,ceil(0.5f*(float)M/(float)block_size));
-  dim3 blockDim(1, block_size);
+  dim3 gridDim(ceil(0.5f*(float)N/(float)block_size),M);
+  dim3 blockDim(block_size,1);
   //dim3 gridDim(ceil(0.5f*(float)N/(float)block_size), M);
   //dim3 blockDim(block_size,1);
 
@@ -327,10 +327,10 @@ void benchmark_mat(  const std::size_t M,
   AssertCuda(errorCode);
 
  //Printing for checking correctness
- for(unsigned int i = 0; i <M*K;++i){
+/* for(unsigned int i = 0; i <M*K;++i){
   	std::cout << result_host[(i*M)%(M*K)+(i/K)] << " ";
 	if (i % K == K-1) std::cout << "" << std::endl;
-  }
+  }*/
 /*  
   for(unsigned int i = 0; i < M; ++i)
   	std::cout << result_host[i] << std::endl;
@@ -381,13 +381,13 @@ int main(int argc, char **argv)
   if(N < 0) N = M;
 
   //For running series test
-/*for(float i = 7; i < 14; i+= 0.2){
+for(float i = 7; i < 14; i+= 0.2){
   		long size = round(pow(2,i));
 		benchmark_mat(size,size,K);
-  }*/
+  }
 
 
-  benchmark_mat(M, N, K);
+//  benchmark_mat(M, N, K);
 
   return 0;
 }
