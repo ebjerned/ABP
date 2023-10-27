@@ -30,7 +30,7 @@ CCSdoubletime_rows = []
 for row in csvreaderCCSdoubletime:
     CCSdoubletime_rows.append(row)
     
-
+"""
 CCSfloatperf= open('C:/Users/Erik Bjerned/Documents/Git_repos/ABP/P/CCSfloatperf.txt')
 csvreaderCCSfloatperf = csv.reader(CCSfloatperf)
 
@@ -48,7 +48,7 @@ for row in csvreaderCRSfloatperf:
 
 
 
-
+"""
 def column(matrix, i):
     return[float(row[i]) for row in matrix]
 
