@@ -421,9 +421,9 @@ int main(int argc, char **argv)
   if(N < 0) N = M;
 
   //For running series test
-for(float i = 11; i < 14; i+= 0.2){
+for(float i = 7; i < 14; i+= 0.2){
   		long size = round(pow(2,i));
-		benchmark_mat(16384,size,1);
+		benchmark_mat(size,size,1);
   }
 
 
