@@ -1,0 +1,16 @@
+MATMUL (GPU) of size (M,N,K)     2048  10000 1 : min/avg/max:   0.0009559  0.00113318  0.00159644 seconds or   428497 GFLOPS/s or  85.7497 GB/s
+MATMUL (GPU) of size (M,N,K)     2353  10000 1 : min/avg/max:  0.00105333  0.00105703  0.00107775 seconds or   446772 GFLOPS/s or  89.4013 GB/s
+MATMUL (GPU) of size (M,N,K)     2702  10000 1 : min/avg/max:   0.0013436  0.00134737  0.00137171 seconds or   402202 GFLOPS/s or  80.4781 GB/s
+MATMUL (GPU) of size (M,N,K)     3104  10000 1 : min/avg/max:  0.00141215  0.00141641  0.00144829 seconds or   439612 GFLOPS/s or  87.9596 GB/s
+MATMUL (GPU) of size (M,N,K)     3566  10000 1 : min/avg/max:  0.00150249  0.00151965  0.00153607 seconds or   474680 GFLOPS/s or  94.9721 GB/s
+MATMUL (GPU) of size (M,N,K)     4096  10000 1 : min/avg/max:  0.00164737  0.00165564  0.00169824 seconds or   497278 GFLOPS/s or  99.4899 GB/s
+MATMUL (GPU) of size (M,N,K)     4705  10000 1 : min/avg/max:   0.0018214  0.00182987  0.00188932 seconds or   516637 GFLOPS/s or   103.36 GB/s
+MATMUL (GPU) of size (M,N,K)     5405  10000 1 : min/avg/max:  0.00250823  0.00251877  0.00261758 seconds or   430981 GFLOPS/s or  86.2207 GB/s
+MATMUL (GPU) of size (M,N,K)     6208  10000 1 : min/avg/max:  0.00262366  0.00264495  0.00270337 seconds or   473232 GFLOPS/s or   94.671 GB/s
+MATMUL (GPU) of size (M,N,K)     7132  10000 1 : min/avg/max:  0.00278927  0.00280452   0.0028838 seconds or   511388 GFLOPS/s or  102.302 GB/s
+MATMUL (GPU) of size (M,N,K)     8192  10000 1 : min/avg/max:  0.00325019  0.00326975  0.00335193 seconds or   504093 GFLOPS/s or  100.841 GB/s
+MATMUL (GPU) of size (M,N,K)     9410  10000 1 : min/avg/max:  0.00353616  0.00355116  0.00366524 seconds or   532215 GFLOPS/s or  106.465 GB/s
+MATMUL (GPU) of size (M,N,K)    10809  10000 1 : min/avg/max:  0.00455298  0.00457254  0.00472087 seconds or   474810 GFLOPS/s or  94.9803 GB/s
+MATMUL (GPU) of size (M,N,K)    12417  10000 1 : min/avg/max:    0.004766  0.00478371  0.00493739 seconds or   521066 GFLOPS/s or  104.232 GB/s
+MATMUL (GPU) of size (M,N,K)    14263  10000 1 : min/avg/max:  0.00539107   0.0054081  0.00558715 seconds or   529134 GFLOPS/s or  105.845 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  10000 1 : min/avg/max:  0.00656783  0.00659103  0.00679026 seconds or   498917 GFLOPS/s or  99.7994 GB/s

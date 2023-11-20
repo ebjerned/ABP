@@ -1,0 +1,5 @@
+MATMUL (GPU) of size (M,N,K)     2048  2048 2048 : min/avg/max:    0.181575    0.184589    0.186899 seconds or  94.6157 GFLOPS/s or 0.0924884 GB/s
+MATMUL (GPU) of size (M,N,K)     2353  2353 2353 : min/avg/max:    0.284515    0.286656    0.288418 seconds or  91.5777 GFLOPS/s or 0.0779053 GB/s
+MATMUL (GPU) of size (M,N,K)     2702  2702 2702 : min/avg/max:     0.43921    0.439949    0.440753 seconds or  89.8285 GFLOPS/s or 0.0665396 GB/s
+MATMUL (GPU) of size (M,N,K)     3104  3104 3104 : min/avg/max:    0.605591    0.606157    0.606737 seconds or  98.7678 GFLOPS/s or 0.0636801 GB/s
+slurmstepd: error: *** JOB 8546819 ON s194 CANCELLED AT 2023-11-06T12:17:12 DUE TO TIME LIMIT ***

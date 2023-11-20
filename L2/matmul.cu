@@ -60,7 +60,7 @@ __device__ void warpReduce1(volatile float* sdata, int tx){
 
 
 }
-
+/*
 __global__ void matmat(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N, unsigned const K){
 	int col = blockDim.x*blockIdx.x + threadIdx.x;
 	int row = blockDim.y*blockIdx.y + threadIdx.y;
@@ -80,8 +80,8 @@ __global__ void matmat(const float* A, const float* B, float* C, unsigned const 
 	__syncthreads();
 	atomicAdd(&C[col+currentRow*K], sum);
    }
-}
-
+}*/
+/*
 template <unsigned int blockSize>
 __global__ void matmat(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const int K){
     __shared__ float sdata[blockSize];
@@ -108,8 +108,47 @@ __global__ void matmat(const float* A, const float* B, float* C, unsigned const 
         if(tx == 0) atomicAdd(&C[row+currentRow*K], sdata[0]);
     }
 }
+*/
+template <unsigned int blockSize>
+__global__ void matmat(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const int K){
+    int row = blockDim.x*blockIdx.x + threadIdx.x;
+
+    if(row >= M) return;
+    float sum = 0;
+    for(int currentCol = 0; currentCol < K; ++currentCol){
+        for(int col = 0; col < N; ++col){
+            sum += A[col*M + row]*B[col+ currentCol*N];
+        }
+    C[row+currentCol*M] = sum;
+    }
+}
 template <unsigned int blockSize>
 __global__ void matvec(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N	){
+    int row = blockDim.x*blockIdx.x + threadIdx.x;
+
+    if (row >= M) return;
+    float sum = 0;
+    for(int col = 0; col < N; ++col){
+        sum += A[col*M+row]*B[col];
+    }
+    C[row] = sum;
+
+}
+
+template <unsigned int blockSize>
+__global__ void matvec_T(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N	){
+    int row = blockDim.x*blockIdx.x + threadIdx.x;
+
+    if (row >= M) return;
+    float sum = 0;
+    for(int col = 0; col < N; ++col){
+        sum += A[col+row*N]*B[col];
+    }
+    C[row] = sum;
+
+}
+template <unsigned int blockSize>
+__global__ void matvec_comp(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N	){
     __shared__ float sdata[blockSize];
 
     int col = (blockDim.x*2)*blockIdx.x + threadIdx.x;
@@ -135,6 +174,7 @@ __global__ void matvec(const float* A, const float* B, float* C, unsigned const 
     if(tx == 0) atomicAdd(&C[row], sdata[0]);
 
 }
+/*
 template <unsigned int blockSize>
 __global__ void matvec_old(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N){
     __shared__ float sdata[blockSize];
@@ -233,7 +273,7 @@ __global__ void matvecT_old(const float* A, const float* B, float* C, unsigned c
 	__syncthreads();
 	atomicAdd(&C[col], sum);
    
-}
+}*/
 void matmat_naive(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const K){
 	for(int i = 0; i < M;++i)
 		for(int k = 0; k < K; ++k){
@@ -283,8 +323,8 @@ void benchmark_mat(  const std::size_t M,
 
   std::vector<float> result_host(M*K);
   
-  dim3 gridDim(ceil(0.5f*(float)N/(float)block_size),M);
-  dim3 blockDim(block_size,1);
+  dim3 gridDim(ceil((float)M/(float)block_size));
+  dim3 blockDim(block_size);
   //dim3 gridDim(ceil(0.5f*(float)N/(float)block_size), M);
   //dim3 blockDim(block_size,1);
 
@@ -302,9 +342,9 @@ void benchmark_mat(  const std::size_t M,
  	 //   set_vector<<<(M*K+block_size-1)/block_size, block_size>>>(M*K, 0.f, C);
 
 		if(K > 1){
-			matmat<<<gridDim, blockDim>>>(A, B, C, M, N, K);
+			matmat<block_size><<<gridDim, blockDim>>>(A, B, C, M, N, K);
 		}else{
-            matvec<block_size><<<gridDim, blockDim>>>(A, B, C, M, N);
+            matvec_T<block_size><<<gridDim, blockDim>>>(A, B, C, M, N);
 		}
 //	    errorCode = cudaGetLastError();
 //	    AssertCuda(errorCode);
@@ -381,9 +421,9 @@ int main(int argc, char **argv)
   if(N < 0) N = M;
 
   //For running series test
-for(float i = 7; i < 14; i+= 0.2){
+for(float i = 11; i < 14; i+= 0.2){
   		long size = round(pow(2,i));
-		benchmark_mat(size,size,K);
+		benchmark_mat(16384,size,1);
   }
 
 

@@ -1,0 +1,25 @@
+MATMUL (GPU) of size (M,N,K)      128  128 128 : min/avg/max: 0.000613904 0.000617874 0.000632422 seconds or  6.83218 GFLOPS/s or 0.108421 GB/s
+MATMUL (GPU) of size (M,N,K)      147  147 147 : min/avg/max: 0.000555127 0.000585365 0.000873489 seconds or  11.4443 GFLOPS/s or 0.157823 GB/s
+MATMUL (GPU) of size (M,N,K)      169  169 169 : min/avg/max:  0.00072465 0.000725412 0.000728136 seconds or  13.3218 GFLOPS/s or  0.15952 GB/s
+MATMUL (GPU) of size (M,N,K)      194  194 194 : min/avg/max: 0.000959567 0.000960449 0.000961105 seconds or  15.2181 GFLOPS/s or 0.158505 GB/s
+MATMUL (GPU) of size (M,N,K)      223  223 223 : min/avg/max:  0.00129014   0.0012926  0.00129378 seconds or  17.1912 GFLOPS/s or 0.155564 GB/s
+MATMUL (GPU) of size (M,N,K)      256  256 256 : min/avg/max:  0.00156888  0.00156902  0.00156921 seconds or  21.3875 GFLOPS/s or 0.168396 GB/s
+MATMUL (GPU) of size (M,N,K)      294  294 294 : min/avg/max:  0.00220098  0.00220133  0.00220163 seconds or  23.0917 GFLOPS/s or 0.158155 GB/s
+MATMUL (GPU) of size (M,N,K)      338  338 338 : min/avg/max:  0.00283204  0.00283445  0.00283636 seconds or  27.2697 GFLOPS/s or 0.162314 GB/s
+MATMUL (GPU) of size (M,N,K)      388  388 388 : min/avg/max:  0.00364945  0.00365256  0.00365412 seconds or  32.0109 GFLOPS/s or 0.165855 GB/s
+MATMUL (GPU) of size (M,N,K)      446  446 446 : min/avg/max:  0.00498334  0.00498389  0.00498502 seconds or  35.6053 GFLOPS/s or 0.160381 GB/s
+MATMUL (GPU) of size (M,N,K)      512  512 512 : min/avg/max:    0.006212  0.00621222  0.00621246 seconds or  43.2124 GFLOPS/s or 0.169458 GB/s
+MATMUL (GPU) of size (M,N,K)      588  588 588 : min/avg/max:  0.00852519  0.00852846   0.0085318 seconds or  47.6934 GFLOPS/s or 0.162774 GB/s
+MATMUL (GPU) of size (M,N,K)      676  676 676 : min/avg/max:   0.0127776   0.0127787   0.0127794 seconds or  48.3526 GFLOPS/s or 0.143478 GB/s
+MATMUL (GPU) of size (M,N,K)      776  776 776 : min/avg/max:   0.0162116   0.0162143   0.0162386 seconds or  57.6485 GFLOPS/s or 0.148962 GB/s
+MATMUL (GPU) of size (M,N,K)      891  891 891 : min/avg/max:   0.0242592   0.0243064   0.0243455 seconds or  58.3159 GFLOPS/s or 0.131194 GB/s
+MATMUL (GPU) of size (M,N,K)     1024  1024 1024 : min/avg/max:   0.0320136    0.032144   0.0322993 seconds or  67.0803 GFLOPS/s or 0.131272 GB/s
+MATMUL (GPU) of size (M,N,K)     1176  1176 1176 : min/avg/max:   0.0544775   0.0545147   0.0545772 seconds or  59.7083 GFLOPS/s or 0.101717 GB/s
+MATMUL (GPU) of size (M,N,K)     1351  1351 1351 : min/avg/max:   0.0771601   0.0775952   0.0779729 seconds or  63.9151 GFLOPS/s or 0.094759 GB/s
+MATMUL (GPU) of size (M,N,K)     1552  1552 1552 : min/avg/max:    0.105539    0.106216     0.10684 seconds or  70.8424 GFLOPS/s or 0.0914094 GB/s
+MATMUL (GPU) of size (M,N,K)     1783  1783 1783 : min/avg/max:    0.146222    0.147071    0.147814 seconds or  77.5302 GFLOPS/s or 0.0870636 GB/s
+MATMUL (GPU) of size (M,N,K)     2048  2048 2048 : min/avg/max:    0.192274    0.193617     0.19459 seconds or   89.351 GFLOPS/s or 0.0873421 GB/s
+MATMUL (GPU) of size (M,N,K)     2353  2353 2353 : min/avg/max:     0.28975     0.29051     0.29115 seconds or  89.9233 GFLOPS/s or 0.0764979 GB/s
+MATMUL (GPU) of size (M,N,K)     2702  2702 2702 : min/avg/max:    0.440519    0.440776    0.441048 seconds or  89.5615 GFLOPS/s or 0.0663418 GB/s
+MATMUL (GPU) of size (M,N,K)     3104  3104 3104 : min/avg/max:     0.60698    0.607277    0.607539 seconds or  98.5419 GFLOPS/s or 0.0635344 GB/s
+slurmstepd: error: *** JOB 8546805 ON s194 CANCELLED AT 2023-11-06T11:44:12 DUE TO TIME LIMIT ***
