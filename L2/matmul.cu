@@ -344,7 +344,7 @@ void benchmark_mat(  const std::size_t M,
 		if(K > 1){
 			matmat<block_size><<<gridDim, blockDim>>>(A, B, C, M, N, K);
 		}else{
-            matvec_T<block_size><<<gridDim, blockDim>>>(A, B, C, M, N);
+            matvec<block_size><<<gridDim, blockDim>>>(A, B, C, M, N);
 		}
 //	    errorCode = cudaGetLastError();
 //	    AssertCuda(errorCode);
@@ -423,7 +423,7 @@ int main(int argc, char **argv)
   //For running series test
 for(float i = 7; i < 14; i+= 0.2){
   		long size = round(pow(2,i));
-		benchmark_mat(size,size,1);
+		benchmark_mat(16384,size,1);
   }
 
 
