@@ -2,9 +2,9 @@ import os
 import matplotlib.pyplot as plt
 ## Rerun with align option
 
-f = "times.txt"
+f = "D:/bjern/Documents/Universitet/Git_repos/ABP/L4/times.txt"
 count = 0
-data = [];
+data = []
 test_data = {}
 
 def column(matrix, i):
@@ -13,13 +13,13 @@ def column(matrix, i):
 
 with open(f, "r") as file:
     for line in file:
-        if "interval" in line: continue;
+        if "interval" in line: continue
         split_line = line.split()
         if (len(split_line) == 1):
             curr_key = split_line[0]
             test_data[curr_key] =[]; 
         else:
-            test_data[curr_key].append(split_line);
+            test_data[curr_key].append(split_line)
             
     file.close()
 
@@ -172,7 +172,7 @@ plt.legend(["Jtime-float-cpu-right", "Ctime-float-cpu-right", "Jtime-float-gpu-r
 plt.title("Time comparison on CPU and GPU, Kokkos::LayoutRight")
 plt.savefig("TR.png")
 """
-
+"""
 plt.clf()
 plt.xscale("log")
 plt.yscale("log")
@@ -187,5 +187,29 @@ plt.ylabel("Time [s]")
 plt.xlabel("No. elements [-]")
 plt.legend(["Jinit", "Jtransfer", "Acompute-cpu", "Acompute-gpu", "Atransfer"])
 plt.title("Time comparison on CPU and GPU")
+plt.savefig("T.png")"""
+
+#plt.clf()
+#plt.xscale("log")
+#plt.yscale("log")
+
+
+jt = column(test_data["GPUTIME"], 17)
+at = column(test_data["GPUTIME"], 20)
+c = column(test_data["GPUTIME"],8)
+bw = [1e-9*25*N[e]/(at[e] + jt[e])*8 for e in range(0,len(N))]
+print(max(bw))
+"""
+plt.plot(N, column(test_data["CPUTIME"], 23))
+plt.plot(N, column(test_data["CPUTIME"],17))
+plt.plot(N, column(test_data["CPUTIME"],8))
+plt.plot(N, column(test_data["GPUTIME"],8))
+plt.plot(N, column(test_data["CPUTIME"], 20))
+plt.grid()
+plt.ylabel("Time [s]")
+plt.xlabel("No. elements [-]")
+plt.legend(["Jinit", "Jtransfer", "Acompute-cpu", "Acompute-gpu", "Atransfer"])
+plt.title("Time comparison on CPU and GPU")
 plt.savefig("T.png")
 
+"""
