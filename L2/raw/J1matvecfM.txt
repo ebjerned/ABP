@@ -1,36 +1,36 @@
-STREAM triad of size    16384  128 1 : min/avg/max:  6.5614e-05  0.00028771  0.00443621 seconds or  8182.26 GFLOPS/s or  128.854 GB/s
-STREAM triad of size    16384  147 1 : min/avg/max:   7.002e-05 0.000329171  0.00522123 seconds or  10112.6 GFLOPS/s or  138.531 GB/s
-STREAM triad of size    16384  169 1 : min/avg/max:  7.7863e-05 0.000378508  0.00605085 seconds or  12019.7 GFLOPS/s or  143.095 GB/s
-STREAM triad of size    16384  194 1 : min/avg/max:  8.2127e-05  0.00042868  0.00695964 seconds or  15016.5 GFLOPS/s or  155.616 GB/s
-STREAM triad of size    16384  223 1 : min/avg/max:  8.7894e-05 0.000485883   0.0080037 seconds or  18539.6 GFLOPS/s or   167.03 GB/s
-STREAM triad of size    16384  256 1 : min/avg/max:  9.6655e-05 0.000555292  0.00922382 seconds or    22218 GFLOPS/s or  174.267 GB/s
-STREAM triad of size    16384  294 1 : min/avg/max:  9.7817e-05 0.000627786   0.0106152 seconds or  28955.4 GFLOPS/s or  197.658 GB/s
-STREAM triad of size    16384  338 1 : min/avg/max: 0.000110824 0.000719851    0.012231 seconds or  33779.2 GFLOPS/s or  200.481 GB/s
-STREAM triad of size    16384  388 1 : min/avg/max: 0.000123233  0.00082277   0.0140701 seconds or  40030.1 GFLOPS/s or  206.885 GB/s
-STREAM triad of size    16384  446 1 : min/avg/max: 0.000135245 0.000939512   0.0161743 seconds or  48194.6 GFLOPS/s or  216.617 GB/s
-STREAM triad of size    16384  512 1 : min/avg/max: 0.000151829  0.00107325   0.0185427 seconds or  56576.4 GFLOPS/s or  221.447 GB/s
-STREAM triad of size    16384  588 1 : min/avg/max: 0.000170975   0.0012306   0.0213371 seconds or  66263.1 GFLOPS/s or  225.782 GB/s
-STREAM triad of size    16384  676 1 : min/avg/max: 0.000192948  0.00141545   0.0246068 seconds or  77607.4 GFLOPS/s or  229.961 GB/s
-STREAM triad of size    16384  776 1 : min/avg/max: 0.000218999  0.00162509   0.0283067 seconds or  90101.3 GFLOPS/s or  232.533 GB/s
-STREAM triad of size    16384  891 1 : min/avg/max: 0.000250547  0.00187046   0.0326176 seconds or   103828 GFLOPS/s or  233.336 GB/s
-STREAM triad of size    16384  1024 1 : min/avg/max: 0.000282276  0.00215332   0.0376451 seconds or   121724 GFLOPS/s or  237.989 GB/s
-STREAM triad of size    16384  1176 1 : min/avg/max: 0.000321517   0.0024794   0.0431745 seconds or   140949 GFLOPS/s or  239.927 GB/s
-STREAM triad of size    16384  1351 1 : min/avg/max: 0.000366752  0.00284406   0.0498787 seconds or   163075 GFLOPS/s or  241.608 GB/s
-STREAM triad of size    16384  1552 1 : min/avg/max: 0.000417433  0.00328557   0.0574893 seconds or   189080 GFLOPS/s or  243.832 GB/s
-STREAM triad of size    16384  1783 1 : min/avg/max: 0.000478761  0.00377804   0.0664307 seconds or   217587 GFLOPS/s or  244.221 GB/s
-STREAM triad of size    16384  2048 1 : min/avg/max: 0.000546566  0.00435413   0.0766584 seconds or   251459 GFLOPS/s or    245.7 GB/s
-STREAM triad of size    16384  2353 1 : min/avg/max: 0.000624975  0.00503091   0.0887158 seconds or   290289 GFLOPS/s or   246.86 GB/s
-STREAM triad of size    16384  2702 1 : min/avg/max: 0.000714259  0.00580955    0.102579 seconds or   334938 GFLOPS/s or  248.026 GB/s
-STREAM triad of size    16384  3104 1 : min/avg/max:  0.00082041  0.00674006     0.11919 seconds or   384824 GFLOPS/s or  248.049 GB/s
-STREAM triad of size    16384  3566 1 : min/avg/max: 0.000941053  0.00777972    0.137679 seconds or   442791 GFLOPS/s or  248.425 GB/s
-STREAM triad of size    16384  4096 1 : min/avg/max:  0.00107925  0.00903182    0.160085 seconds or   509388 GFLOPS/s or    248.8 GB/s
-STREAM triad of size    16384  4705 1 : min/avg/max:  0.00123465   0.0104581    0.185662 seconds or   587524 GFLOPS/s or  249.813 GB/s
-STREAM triad of size    16384  5405 1 : min/avg/max:   0.0014166   0.0121553    0.216099 seconds or   675762 GFLOPS/s or  250.112 GB/s
-STREAM triad of size    16384  6208 1 : min/avg/max:  0.00162654   0.0141175    0.251402 seconds or   776404 GFLOPS/s or  250.186 GB/s
-STREAM triad of size    16384  7132 1 : min/avg/max:  0.00186776   0.0164991    0.294454 seconds or   892383 GFLOPS/s or  250.298 GB/s
-STREAM triad of size    16384  8192 1 : min/avg/max:  0.00214354   0.0192303    0.343807 seconds or 1.02589e+06 GFLOPS/s or  250.506 GB/s
-STREAM triad of size    16384  9410 1 : min/avg/max:  0.00246104   0.0225088    0.403338 seconds or 1.17899e+06 GFLOPS/s or  250.625 GB/s
-STREAM triad of size    16384  10809 1 : min/avg/max:  0.00282546   0.0264081    0.474405 seconds or 1.35498e+06 GFLOPS/s or  250.751 GB/s
-STREAM triad of size    16384  12417 1 : min/avg/max:  0.00324679   0.0311317    0.560878 seconds or 1.55607e+06 GFLOPS/s or  250.671 GB/s
-STREAM triad of size    16384  14263 1 : min/avg/max:   0.0037272   0.0365672    0.660451 seconds or 1.7885e+06 GFLOPS/s or  250.822 GB/s
-STREAM triad of size    16384  16384 1 : min/avg/max:  0.00429622    0.043345    0.785141 seconds or 2.0474e+06 GFLOPS/s or  249.958 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  128 1 : min/avg/max: 3.61295e-05 3.62967e-05 3.69769e-05 seconds or  14859.6 GFLOPS/s or   234.01 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  147 1 : min/avg/max: 4.08251e-05 4.09614e-05 4.22511e-05 seconds or  17344.3 GFLOPS/s or  237.597 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  169 1 : min/avg/max: 4.60645e-05 4.62432e-05 4.77999e-05 seconds or  20316.9 GFLOPS/s or  241.874 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  194 1 : min/avg/max: 5.25925e-05 5.27991e-05 5.47814e-05 seconds or  23449.3 GFLOPS/s or  243.006 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  223 1 : min/avg/max: 5.95178e-05 5.97733e-05 6.20922e-05 seconds or  27378.7 GFLOPS/s or  246.665 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  256 1 : min/avg/max: 6.79058e-05 6.82774e-05 7.10496e-05 seconds or  31624.5 GFLOPS/s or  248.046 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  294 1 : min/avg/max: 7.74649e-05 7.78275e-05  8.1126e-05 seconds or  36562.8 GFLOPS/s or  249.588 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  338 1 : min/avg/max: 8.83728e-05 8.87326e-05 9.27471e-05 seconds or  42360.9 GFLOPS/s or  251.413 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  388 1 : min/avg/max: 0.000101224 0.000101731 0.000106016 seconds or    48734 GFLOPS/s or  251.869 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  446 1 : min/avg/max: 0.000113655 0.000115262 0.000120917 seconds or  57349.6 GFLOPS/s or  257.765 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  512 1 : min/avg/max: 0.000130787 0.000131352 0.000137231 seconds or  65678.8 GFLOPS/s or  257.075 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  588 1 : min/avg/max: 0.000150276   0.0001509  0.00015784 seconds or  75390.2 GFLOPS/s or  256.881 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  676 1 : min/avg/max: 0.000172592 0.000173225 0.000181285 seconds or  86760.5 GFLOPS/s or  257.083 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  776 1 : min/avg/max: 0.000198188 0.000198992 0.000208931 seconds or  99562.6 GFLOPS/s or  256.951 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  891 1 : min/avg/max:  0.00022634 0.000227254 0.000238194 seconds or   114933 GFLOPS/s or  258.292 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  1024 1 : min/avg/max: 0.000263036 0.000264102 0.000277163 seconds or   130628 GFLOPS/s or  255.397 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  1176 1 : min/avg/max: 0.000302944 0.000304136 0.000319786 seconds or   149590 GFLOPS/s or  254.636 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  1351 1 : min/avg/max:  0.00034802 0.000349491 0.000370362 seconds or   171853 GFLOPS/s or  254.612 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  1552 1 : min/avg/max: 0.000403775 0.000405761  0.00042774 seconds or   195476 GFLOPS/s or   252.08 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  1783 1 : min/avg/max: 0.000465249 0.000468119 0.000500922 seconds or   223907 GFLOPS/s or  251.314 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  2048 1 : min/avg/max: 0.000541037 0.000544262 0.000583412 seconds or   254029 GFLOPS/s or  248.211 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  2353 1 : min/avg/max: 0.000620722 0.000624377 0.000670416 seconds or   292278 GFLOPS/s or  248.551 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  2702 1 : min/avg/max: 0.000719798 0.000724382 0.000779134 seconds or   332361 GFLOPS/s or  246.117 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  3104 1 : min/avg/max: 0.000841213 0.000846676 0.000912224 seconds or   375307 GFLOPS/s or  241.914 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  3566 1 : min/avg/max: 0.000964991 0.000970398  0.00104923 seconds or   431807 GFLOPS/s or  242.262 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  4096 1 : min/avg/max:  0.00112395  0.00113198  0.00122367 seconds or   489129 GFLOPS/s or  238.905 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  4705 1 : min/avg/max:  0.00129104  0.00129853  0.00140133 seconds or   561860 GFLOPS/s or  238.901 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  5405 1 : min/avg/max:   0.0014952  0.00150335  0.00161173 seconds or   640239 GFLOPS/s or  236.964 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  6208 1 : min/avg/max:   0.0017407  0.00174969  0.00188274 seconds or   725486 GFLOPS/s or  233.778 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  7132 1 : min/avg/max:  0.00201677  0.00202708  0.00218302 seconds or   826450 GFLOPS/s or  231.805 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  8192 1 : min/avg/max:  0.00232515  0.00233786  0.00252492 seconds or   945754 GFLOPS/s or  230.939 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  9410 1 : min/avg/max:  0.00267569  0.00269241  0.00292179 seconds or 1.08441e+06 GFLOPS/s or  230.519 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  10809 1 : min/avg/max:  0.00308694  0.00310476  0.00336261 seconds or 1.2402e+06 GFLOPS/s or  229.511 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  12417 1 : min/avg/max:  0.00356841  0.00358651  0.00387539 seconds or 1.41582e+06 GFLOPS/s or  228.078 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  14263 1 : min/avg/max:   0.0041265  0.00415217  0.00449973 seconds or 1.61544e+06 GFLOPS/s or  226.551 GB/s
+MATMUL (GPU) of size (M,N,K)    16384  16384 1 : min/avg/max:  0.00477216  0.00479636  0.00519671 seconds or 1.84321e+06 GFLOPS/s or  225.029 GB/s
