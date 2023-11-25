@@ -1,36 +1,36 @@
-STREAM triad of size    16384  128 1 : min/avg/max: 5.38483e-05  0.00279147   0.0547004 seconds or  9970.06 GFLOPS/s or  157.009 GB/s
-STREAM triad of size    16384  147 1 : min/avg/max: 2.58605e-05 6.37414e-05 7.37568e-05 seconds or    27381 GFLOPS/s or  375.087 GB/s
-STREAM triad of size    16384  169 1 : min/avg/max:  2.7628e-05 6.85361e-05 7.82914e-05 seconds or  33874.6 GFLOPS/s or  403.279 GB/s
-STREAM triad of size    16384  194 1 : min/avg/max: 2.87878e-05 7.77649e-05 9.52925e-05 seconds or  42839.5 GFLOPS/s or  443.948 GB/s
-STREAM triad of size    16384  223 1 : min/avg/max: 3.23558e-05 8.40561e-05 9.46529e-05 seconds or  50362.5 GFLOPS/s or  453.735 GB/s
-STREAM triad of size    16384  256 1 : min/avg/max:  3.4723e-05 9.99111e-05 0.000216052 seconds or  61846.2 GFLOPS/s or  485.091 GB/s
-STREAM triad of size    16384  294 1 : min/avg/max: 4.02444e-05 0.000101942 0.000114208 seconds or  70378.4 GFLOPS/s or  480.423 GB/s
-STREAM triad of size    16384  338 1 : min/avg/max: 3.88439e-05 0.000115932 0.000128724 seconds or  96374.1 GFLOPS/s or  571.983 GB/s
-STREAM triad of size    16384  388 1 : min/avg/max: 4.44955e-05 0.000130813  0.00014387 seconds or   110866 GFLOPS/s or   572.98 GB/s
-STREAM triad of size    16384  446 1 : min/avg/max: 5.10161e-05 0.000145529  0.00015953 seconds or   127765 GFLOPS/s or  574.258 GB/s
-STREAM triad of size    16384  512 1 : min/avg/max: 5.82944e-05 0.000163872 0.000178688 seconds or   147354 GFLOPS/s or  576.762 GB/s
-STREAM triad of size    16384  588 1 : min/avg/max: 7.42047e-05 0.000181127 0.000191301 seconds or   152677 GFLOPS/s or  520.224 GB/s
-STREAM triad of size    16384  676 1 : min/avg/max: 8.23939e-05 0.000205233 0.000228801 seconds or   181739 GFLOPS/s or  538.518 GB/s
-STREAM triad of size    16384  776 1 : min/avg/max: 0.000102639 0.000234018 0.000248054 seconds or   192248 GFLOPS/s or  496.153 GB/s
-STREAM triad of size    16384  891 1 : min/avg/max: 0.000139164 0.000266919 0.000280668 seconds or   186930 GFLOPS/s or  420.093 GB/s
-STREAM triad of size    16384  1024 1 : min/avg/max: 0.000161446 0.000306772 0.000322274 seconds or   212825 GFLOPS/s or  416.105 GB/s
-STREAM triad of size    16384  1176 1 : min/avg/max: 0.000206696 0.000354359 0.000377735 seconds or   219247 GFLOPS/s or  373.208 GB/s
-STREAM triad of size    16384  1351 1 : min/avg/max: 0.000264004 0.000406783 0.000422776 seconds or   226542 GFLOPS/s or  335.639 GB/s
-STREAM triad of size    16384  1552 1 : min/avg/max:   0.0003406 0.000468303 0.000483511 seconds or   231734 GFLOPS/s or  298.836 GB/s
-STREAM triad of size    16384  1783 1 : min/avg/max:  0.00044068 0.000539275 0.000553717 seconds or   236390 GFLOPS/s or  265.325 GB/s
-STREAM triad of size    16384  2048 1 : min/avg/max: 0.000570584 0.000622954 0.000635634 seconds or   240874 GFLOPS/s or  235.358 GB/s
-STREAM triad of size    16384  2353 1 : min/avg/max: 0.000718461 0.000720866 0.000742713 seconds or   252517 GFLOPS/s or  214.739 GB/s
-STREAM triad of size    16384  2702 1 : min/avg/max: 0.000825415 0.000835431 0.000987027 seconds or   289833 GFLOPS/s or  214.625 GB/s
-STREAM triad of size    16384  3104 1 : min/avg/max: 0.000949513 0.000968972  0.00129937 seconds or   332501 GFLOPS/s or  214.322 GB/s
-STREAM triad of size    16384  3566 1 : min/avg/max:  0.00108882  0.00112036  0.00167601 seconds or   382697 GFLOPS/s or   214.71 GB/s
-STREAM triad of size    16384  4096 1 : min/avg/max:  0.00125434  0.00130314  0.00219776 seconds or   438283 GFLOPS/s or  214.071 GB/s
-STREAM triad of size    16384  4705 1 : min/avg/max:  0.00144085  0.00151397  0.00284627 seconds or   503443 GFLOPS/s or  214.062 GB/s
-STREAM triad of size    16384  5405 1 : min/avg/max:  0.00165463  0.00176825  0.00383611 seconds or   578548 GFLOPS/s or  214.132 GB/s
-STREAM triad of size    16384  6208 1 : min/avg/max:  0.00190237  0.00206019  0.00500421 seconds or   663834 GFLOPS/s or  213.912 GB/s
-STREAM triad of size    16384  7132 1 : min/avg/max:  0.00218683  0.00241041  0.00658385 seconds or   762180 GFLOPS/s or  213.778 GB/s
-STREAM triad of size    16384  8192 1 : min/avg/max:  0.00251464  0.00283155  0.00881293 seconds or   874487 GFLOPS/s or  213.537 GB/s
-STREAM triad of size    16384  9410 1 : min/avg/max:   0.0028968  0.00332603   0.0114078 seconds or 1.00164e+06 GFLOPS/s or  212.923 GB/s
-STREAM triad of size    16384  10809 1 : min/avg/max:  0.00332567  0.00390717   0.0148929 seconds or 1.15118e+06 GFLOPS/s or  213.036 GB/s
-STREAM triad of size    16384  12417 1 : min/avg/max:  0.00382325   0.0046118   0.0195178 seconds or 1.32145e+06 GFLOPS/s or  212.875 GB/s
-STREAM triad of size    16384  14263 1 : min/avg/max:  0.00439481  0.00546269   0.0256634 seconds or 1.51681e+06 GFLOPS/s or   212.72 GB/s
-STREAM triad of size    16384  16384 1 : min/avg/max:  0.00505954   0.0064989   0.0337623 seconds or 1.73852e+06 GFLOPS/s or  212.247 GB/s
+STREAM tr iad of size 16384 128 1 : min/avg/max: 5.38483e-05 0.00279147 0.0547004 seconds or 9970.06 GFLOPS/s or 157.009 GB/s
+STREAM tr iad of size 16384 147 1 : min/avg/max: 2.58605e-05 6.37414e-05 7.37568e-05 seconds or 27381 GFLOPS/s or 375.087 GB/s
+STREAM tr iad of size 16384 169 1 : min/avg/max: 2.7628e-05 6.85361e-05 7.82914e-05 seconds or 33874.6 GFLOPS/s or 403.279 GB/s
+STREAM tr iad of size 16384 194 1 : min/avg/max: 2.87878e-05 7.77649e-05 9.52925e-05 seconds or 42839.5 GFLOPS/s or 443.948 GB/s
+STREAM tr iad of size 16384 223 1 : min/avg/max: 3.23558e-05 8.40561e-05 9.46529e-05 seconds or 50362.5 GFLOPS/s or 453.735 GB/s
+STREAM tr iad of size 16384 256 1 : min/avg/max: 3.4723e-05 9.99111e-05 0.000216052 seconds or 61846.2 GFLOPS/s or 485.091 GB/s
+STREAM tr iad of size 16384 294 1 : min/avg/max: 4.02444e-05 0.000101942 0.000114208 seconds or 70378.4 GFLOPS/s or 480.423 GB/s
+STREAM tr iad of size 16384 338 1 : min/avg/max: 3.88439e-05 0.000115932 0.000128724 seconds or 96374.1 GFLOPS/s or 571.983 GB/s
+STREAM tr iad of size 16384 388 1 : min/avg/max: 4.44955e-05 0.000130813 0.00014387 seconds or 110866 GFLOPS/s or 572.98 GB/s
+STREAM tr iad of size 16384 446 1 : min/avg/max: 5.10161e-05 0.000145529 0.00015953 seconds or 127765 GFLOPS/s or 574.258 GB/s
+STREAM tr iad of size 16384 512 1 : min/avg/max: 5.82944e-05 0.000163872 0.000178688 seconds or 147354 GFLOPS/s or 576.762 GB/s
+STREAM tr iad of size 16384 588 1 : min/avg/max: 7.42047e-05 0.000181127 0.000191301 seconds or 152677 GFLOPS/s or 520.224 GB/s
+STREAM tr iad of size 16384 676 1 : min/avg/max: 8.23939e-05 0.000205233 0.000228801 seconds or 181739 GFLOPS/s or 538.518 GB/s
+STREAM tr iad of size 16384 776 1 : min/avg/max: 0.000102639 0.000234018 0.000248054 seconds or 192248 GFLOPS/s or 496.153 GB/s
+STREAM tr iad of size 16384 891 1 : min/avg/max: 0.000139164 0.000266919 0.000280668 seconds or 186930 GFLOPS/s or 420.093 GB/s
+STREAM tr iad of size 16384 1024 1 : min/avg/max: 0.000161446 0.000306772 0.000322274 seconds or 212825 GFLOPS/s or 416.105 GB/s
+STREAM tr iad of size 16384 1176 1 : min/avg/max: 0.000206696 0.000354359 0.000377735 seconds or 219247 GFLOPS/s or 373.208 GB/s
+STREAM tr iad of size 16384 1351 1 : min/avg/max: 0.000264004 0.000406783 0.000422776 seconds or 226542 GFLOPS/s or 335.639 GB/s
+STREAM tr iad of size 16384 1552 1 : min/avg/max: 0.0003406 0.000468303 0.000483511 seconds or 231734 GFLOPS/s or 298.836 GB/s
+STREAM tr iad of size 16384 1783 1 : min/avg/max: 0.00044068 0.000539275 0.000553717 seconds or 236390 GFLOPS/s or 265.325 GB/s
+STREAM tr iad of size 16384 2048 1 : min/avg/max: 0.000570584 0.000622954 0.000635634 seconds or 240874 GFLOPS/s or 235.358 GB/s
+STREAM tr iad of size 16384 2353 1 : min/avg/max: 0.000718461 0.000720866 0.000742713 seconds or 252517 GFLOPS/s or 214.739 GB/s
+STREAM tr iad of size 16384 2702 1 : min/avg/max: 0.000825415 0.000835431 0.000987027 seconds or 289833 GFLOPS/s or 214.625 GB/s
+STREAM tr iad of size 16384 3104 1 : min/avg/max: 0.000949513 0.000968972 0.00129937 seconds or 332501 GFLOPS/s or 214.322 GB/s
+STREAM tr iad of size 16384 3566 1 : min/avg/max: 0.00108882 0.00112036 0.00167601 seconds or 382697 GFLOPS/s or 214.71 GB/s
+STREAM tr iad of size 16384 4096 1 : min/avg/max: 0.00125434 0.00130314 0.00219776 seconds or 438283 GFLOPS/s or 214.071 GB/s
+STREAM tr iad of size 16384 4705 1 : min/avg/max: 0.00144085 0.00151397 0.00284627 seconds or 503443 GFLOPS/s or 214.062 GB/s
+STREAM tr iad of size 16384 5405 1 : min/avg/max: 0.00165463 0.00176825 0.00383611 seconds or 578548 GFLOPS/s or 214.132 GB/s
+STREAM tr iad of size 16384 6208 1 : min/avg/max: 0.00190237 0.00206019 0.00500421 seconds or 663834 GFLOPS/s or 213.912 GB/s
+STREAM tr iad of size 16384 7132 1 : min/avg/max: 0.00218683 0.00241041 0.00658385 seconds or 762180 GFLOPS/s or 213.778 GB/s
+STREAM tr iad of size 16384 8192 1 : min/avg/max: 0.00251464 0.00283155 0.00881293 seconds or 874487 GFLOPS/s or 213.537 GB/s
+STREAM tr iad of size 16384 9410 1 : min/avg/max: 0.0028968 0.00332603 0.0114078 seconds or 1.00164e+06 GFLOPS/s or 212.923 GB/s
+STREAM tr iad of size 16384 10809 1 : min/avg/max: 0.00332567 0.00390717 0.0148929 seconds or 1.15118e+06 GFLOPS/s or 213.036 GB/s
+STREAM tr iad of size 16384 12417 1 : min/avg/max: 0.00382325 0.0046118 0.0195178 seconds or 1.32145e+06 GFLOPS/s or 212.875 GB/s
+STREAM tr iad of size 16384 14263 1 : min/avg/max: 0.00439481 0.00546269 0.0256634 seconds or 1.51681e+06 GFLOPS/s or 212.72 GB/s
+STREAM tr iad of size 16384 16384 1 : min/avg/max: 0.00505954 0.0064989 0.0337623 seconds or 1.73852e+06 GFLOPS/s or 212.247 GB/s

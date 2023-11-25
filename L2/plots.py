@@ -22,24 +22,24 @@ for filename in os.listdir(directory):
             
             file.close()
         #print(data) 
-        sizeN_vec = [float(line[4]) for line in data]
-        sizeM_vec = [float(line[5]) for line in data]
+        sizeN_vec = [float(line[5]) for line in data]
+        sizeM_vec = [float(line[6]) for line in data]
         mem_vec = [float(line[-2]) for line in data]
         gflops_vec = [float(line[-5]) for line in data]
-        styles = ["-", "-", "-", "-", "k--", "-", "k--", "-", "k--", "-", "-", "-", "k--","-", "-"]
+        styles = ["-", "k--", "-", "k--", "-", "k--", "-", "-","k--"]
         #print(mem_vec)
         plt.xscale("log")
-        if(count == 7 or count == 8):
+        if(count == 4 or count == 5):
             plt.plot(sizeM_vec, mem_vec, styles[count], linewidth=1)
-        elif(count > 8 and count < 14):
+        elif(count > 5 and count < 9):
             plt.yscale("log")
             plt.plot(sizeN_vec, gflops_vec, styles[count], linewidth=1)
         else:
             plt.plot(sizeN_vec, mem_vec, styles[count], linewidth=1)
         
         #plt.axes((512, 1e8, 0, 256))
-        if count == 4:
-            plt.legend(["32", "128", "512", "1024", "cuBLAS"])
+        if count == 1:
+            plt.legend(["Implemented", "cuBLAS"])
             plt.grid()
             plt.title("Matrix-vector multiplication, M = N")
             plt.ylabel("Memory throughput [GB/s]")
@@ -47,7 +47,7 @@ for filename in os.listdir(directory):
             plt.savefig("Matvec.png")
             plt.show()
             plt.clf()
-        if count == 6:
+        if count == 3:
             plt.legend(["Implemented", "cuBLAS"])
             plt.grid()
             plt.title("Matrix-vector multiplication, fixed N=10000")
@@ -57,7 +57,7 @@ for filename in os.listdir(directory):
             plt.show()
             plt.clf()
             
-        if count == 8:
+        if count == 5:
             plt.legend(["Implemented", "cuBLAS"])
             plt.grid()
             plt.title("Matrix-vector multiplication, fixed M=16384")
@@ -67,8 +67,8 @@ for filename in os.listdir(directory):
             plt.show()
             plt.clf()
             
-        if count == 13:
-            plt.legend(["32","128", "512", "cuBLAS", "Naive"])
+        if count == 8:
+            plt.legend(["Implemented", "cuBLAS", "Naive"])
             plt.grid()
             plt.title("Matrix-matrix multiplication, M=N=K")
             plt.ylabel("Computations [GFLOPS/s]")
@@ -76,11 +76,5 @@ for filename in os.listdir(directory):
             plt.savefig("Matmat.png")
             plt.show()
             plt.clf()
-            
-            
-            
-        
-            
-            
             
     count += 1
