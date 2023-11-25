@@ -293,6 +293,9 @@ void matmat_naiveT(const float* A, const float* B, float* C, unsigned const int 
 		}
 
 }
+
+
+
 void benchmark_mat(  const std::size_t M,
 					 const std::size_t N,
                      const std::size_t K)
@@ -327,7 +330,13 @@ void benchmark_mat(  const std::size_t M,
   dim3 blockDim(block_size);
   //dim3 gridDim(ceil(0.5f*(float)N/(float)block_size), M);
   //dim3 blockDim(block_size,1);
-
+  float* AA, *BB, *CC;
+  AA = (float*) malloc(M*N*sizeof(float));
+  BB = (float*) malloc(N*K*sizeof(float));
+  CC = (float*) malloc(M*K*sizeof(float));
+  cudaMemcpy(AA,  A, M *N* sizeof(float), cudaMemcpyDeviceToHost);  
+  cudaMemcpy(BB,  B, N *K* sizeof(float), cudaMemcpyDeviceToHost);  
+  cudaMemcpy(CC,  C, M *K* sizeof(float), cudaMemcpyDeviceToHost);  
 
   const unsigned int n_tests = 20;
   const unsigned int n_repeat = 20;
@@ -344,7 +353,8 @@ void benchmark_mat(  const std::size_t M,
 		if(K > 1){
 			matmat<block_size><<<gridDim, blockDim>>>(A, B, C, M, N, K);
 		}else{
-            matvec<block_size><<<gridDim, blockDim>>>(A, B, C, M, N);
+//            matvec<block_size><<<gridDim, blockDim>>>(A, B, C, M, N);
+            matmat_naiveT(AA, BB, CC, M, N, 1);
 		}
 //	    errorCode = cudaGetLastError();
 //	    AssertCuda(errorCode);
@@ -363,8 +373,8 @@ void benchmark_mat(  const std::size_t M,
       avg += time / n_repeat;
     }
 
-  errorCode = cudaMemcpy(result_host.data(),  C, M *K* sizeof(float), cudaMemcpyDeviceToHost);  
-  AssertCuda(errorCode);
+//  errorCode = cudaMemcpy(result_host.data(),  C, M *K* sizeof(float), cudaMemcpyDeviceToHost);  
+//  AssertCuda(errorCode);
 
  //Printing for checking correctness
 /* for(unsigned int i = 0; i <M*K;++i){
@@ -381,7 +391,9 @@ void benchmark_mat(  const std::size_t M,
   AssertCuda(errorCode);
   errorCode = cudaFree(C);
   AssertCuda(errorCode);
-
+  free(AA);
+  free(BB);
+  free(CC);
   std::cout << "MATMUL (GPU) of size (M,N,K) " << std::setw(8) << M << "  " << N << " " << K 
             << " : min/avg/max: " << std::setw(11) << best << " "
             << std::setw(11) << avg / n_tests << " " << std::setw(11) << worst
@@ -423,7 +435,7 @@ int main(int argc, char **argv)
   //For running series test
 for(float i = 7; i < 14; i+= 0.2){
   		long size = round(pow(2,i));
-		benchmark_mat(16384,size,1);
+		benchmark_mat(size, size,1);
   }
 
 
