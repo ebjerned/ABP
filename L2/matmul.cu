@@ -40,75 +40,6 @@ __global__ void set_vector_rising(const int N, const float val, float *x)
     }
 }
 
-__device__ void warpReduce0(volatile float* sdata, int tx){
-    sdata[tx] += sdata[tx + 32];
-    sdata[tx] += sdata[tx + 16];
-    sdata[tx] += sdata[tx + 8];
-    sdata[tx] += sdata[tx + 4];
-    sdata[tx] += sdata[tx + 2];
-    sdata[tx] += sdata[tx + 1];
-
-}
-template <unsigned int blockSize>
-__device__ void warpReduce1(volatile float* sdata, int tx){
-    if(blockSize >= 64) sdata[tx] += sdata[tx +32];
-    if(blockSize >= 32) sdata[tx] += sdata[tx +16];
-    if(blockSize >= 16) sdata[tx] += sdata[tx +8];
-    if(blockSize >= 8) sdata[tx] += sdata[tx +4];
-    if(blockSize >= 4) sdata[tx] += sdata[tx +2];
-    if(blockSize >= 2) sdata[tx] += sdata[tx +1];
-
-
-}
-/*
-__global__ void matmat(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N, unsigned const K){
-	int col = blockDim.x*blockIdx.x + threadIdx.x;
-	int row = blockDim.y*blockIdx.y + threadIdx.y;
-	
-	if((col >= N)|| (row >= M)) return;
-
-
-	int roof = (M+blockDim.y-1)/blockDim.y;
-	roof = (row + blockDim.y*(roof-1)) < M ? roof : roof -1;
-	for(unsigned int currentRow = 0; currentRow < N; ++currentRow){
-		float sum = 0.f;
-		for(unsigned int k= 0; k < roof; k++){
-			float coeff = B[K*currentRow + col+ blockDim.y*k];
-			sum += A[col*M+row + (blockDim.y*k)]*coeff;
-	}
-	
-	__syncthreads();
-	atomicAdd(&C[col+currentRow*K], sum);
-   }
-}*/
-/*
-template <unsigned int blockSize>
-__global__ void matmat(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const int K){
-    __shared__ float sdata[blockSize];
-    int col = (blockDim.x*2)*blockIdx.x + threadIdx.x;
-    int row = blockDim.y*blockIdx.y + threadIdx.y;
-    int tx = threadIdx.x;
-
-    for(unsigned int currentRow = 0; currentRow < N; ++currentRow){
-        float sum = ((col >= N) || (row >= M)) ? 0: A[col*M +row]*B[col+currentRow*K];
-        if((col + blockDim.x) < N) sum += A[(col+blockDim.x)*M+row]*B[col+blockDim.x + currentRow*K];
-        sdata[tx] = sum;
-        
-        __syncthreads();
-        if(blockSize >= 1024){
-            if(tx < 512) {sdata[tx] += sdata[tx+512];} __syncthreads();}
-        if(blockSize >= 512){
-            if(tx < 256) {sdata[tx] += sdata[tx+256];} __syncthreads();}
-        if(blockSize >= 256){
-            if(tx < 128) {sdata[tx] += sdata[tx+128];} __syncthreads();}
-        if(blockSize >= 128){
-            if(tx < 64) {sdata[tx] += sdata[tx+64];} __syncthreads();}
-        if(tx < 32) warpReduce1<blockSize>(sdata, tx);
-
-        if(tx == 0) atomicAdd(&C[row+currentRow*K], sdata[0]);
-    }
-}
-*/
 template <unsigned int blockSize>
 __global__ void matmat(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const int K){
     int row = blockDim.x*blockIdx.x + threadIdx.x;
@@ -147,133 +78,7 @@ __global__ void matvec_T(const float* A, const float* B, float* C, unsigned cons
     C[row] = sum;
 
 }
-template <unsigned int blockSize>
-__global__ void matvec_comp(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N	){
-    __shared__ float sdata[blockSize];
-
-    int col = (blockDim.x*2)*blockIdx.x + threadIdx.x;
-	int row = blockDim.y*blockIdx.y + threadIdx.y;
-    int tx = threadIdx.x;
-
-    float sum = ((col >=N) || (row >=M)) ? 0 :A[col*M+row]*B[col];
-    if((col + blockDim.x) < N) sum += A[(col+blockDim.x)*M+row]*B[col + blockDim.x];
-    sdata[tx] = sum;
-
-
-    __syncthreads();
-    if(blockSize >= 1024){
-        if(tx < 512) {sdata[tx] += sdata[tx+512];} __syncthreads();}
-    if(blockSize >= 512){
-        if(tx < 256) {sdata[tx] += sdata[tx+256];} __syncthreads();}
-    if(blockSize >= 256){
-        if(tx < 128) {sdata[tx] += sdata[tx+128];} __syncthreads();}
-    if(blockSize >= 128){
-        if(tx < 64) {sdata[tx] += sdata[tx+64];} __syncthreads();}
-    if(tx < 32) warpReduce1<blockSize>(sdata, tx);
-
-    if(tx == 0) atomicAdd(&C[row], sdata[0]);
-
-}
-/*
-template <unsigned int blockSize>
-__global__ void matvec_old(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N){
-    __shared__ float sdata[blockSize];
-    int col = blockDim.x*blockIdx.x + threadIdx.x;
-    int row = blockDim.y*2*blockIdx.y + threadIdx.y;
-    int ty = threadIdx.y;
-
-    float sum = ((col >= N) || (row >= M)) ? 0 : A[col+row*N]*B[row];
-    if((row + blockDim.y)<M ) sum += A[col + (row+blockDim.y)*N]*B[row+ blockDim.y];
-    sdata[ty] = sum;
-
-    __syncthreads();
-    if(blockSize >= 1024){
-        if(ty < 512) {sdata[ty] += sdata[ty+512];} __syncthreads();}
-    if(blockSize >= 512){
-        if(ty < 256) {sdata[ty] += sdata[ty+256];} __syncthreads();}
-    if(blockSize >= 256){
-        if(ty < 128) {sdata[ty] += sdata[ty+128];} __syncthreads();}
-    if(blockSize >= 128){
-        if(ty < 64) {sdata[ty] += sdata[ty+64];} __syncthreads();}
-    if(ty < 32) warpReduce1<blockSize>(sdata, ty);
-
-    if(ty == 0) atomicAdd(&C[col], sdata[0]);
-
-
-
-}
-
-
-template <unsigned int blockSize>
-__global__ void matvecT(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N){
-    __shared__ float sdata[blockSize];
-    int col = blockDim.x*blockIdx.x + threadIdx.x;
-    int row = blockDim.y*2*blockIdx.y + threadIdx.y;
-    int ty = threadIdx.y;
-
-    float sum = ((col >= N) || (row >= M)) ? 0 : A[col*M+row]*B[row];
-    if((row + blockDim.y)<M ) sum += A[col*M + (row+blockDim.y)]*B[row+ blockDim.y];
-    sdata[ty] = sum;
-
-    __syncthreads();
-    if(blockSize >= 1024){
-        if(ty < 512) {sdata[ty] += sdata[ty+512];} __syncthreads();}
-    if(blockSize >= 512){
-        if(ty < 256) {sdata[ty] += sdata[ty+256];} __syncthreads();}
-    if(blockSize >= 256){
-        if(ty < 128) {sdata[ty] += sdata[ty+128];} __syncthreads();}
-    if(blockSize >= 128){
-        if(ty < 64) {sdata[ty] += sdata[ty+64];} __syncthreads();}
-    if(ty < 32) warpReduce1<blockSize>(sdata, ty);
-
-    if(ty == 0) atomicAdd(&C[col], sdata[0]);
-
-}
-template <unsigned int blockSize>
-__global__ void matvecT_newold(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N){
-    __shared__ float sdata[blockSize];
-
-    int col = (blockDim.x*2)*blockIdx.x + threadIdx.x;
-	int row = blockDim.y*blockIdx.y + threadIdx.y;
-    int tx = threadIdx.x;
-
-    float sum = ((col >=N) || (row >=M)) ? 0 :A[col+row*N]*B[col];
-    if((col + blockDim.x) < N) sum += A[(col+blockDim.x)+row*N]*B[col+blockDim.x];
-    sdata[tx] = sum;
-
-    __syncthreads();
-    if(blockSize >= 1024){
-        if(tx < 512) {sdata[tx] += sdata[tx+512];} __syncthreads();}
-    if(blockSize >= 512){
-        if(tx < 256) {sdata[tx] += sdata[tx+256];} __syncthreads();}
-    if(blockSize >= 256){
-        if(tx < 128) {sdata[tx] += sdata[tx+128];} __syncthreads();}
-    if(blockSize >= 128){
-        if(tx < 64) {sdata[tx] += sdata[tx+64];} __syncthreads();}
-    if(tx < 32) warpReduce1<blockSize>(sdata, tx);
-
-    if(tx == 0) atomicAdd(&C[row], sdata[0]);
-
-}
-
-__global__ void matvecT_old(const float* A, const float* B, float* C, unsigned const int M , unsigned const int N	){
-	int col = blockDim.x*blockIdx.x + threadIdx.x;
-	int row = blockDim.y*blockIdx.y + threadIdx.y;
-	
-	if((col >= N)|| (row >= M)) return;
-
-	int roof = (M+blockDim.y-1)/blockDim.y;
-	roof = (row + blockDim.y*(roof-1)) < M ? roof : roof -1;
-	float sum = 0.f;
-	float coeff = B[col];
-	for(unsigned int k= 0; k < roof; k++){
-		sum += A[col+row*N + (blockDim.y*k)]*coeff;
-	}
-	
-	__syncthreads();
-	atomicAdd(&C[col], sum);
    
-}*/
 void matmat_naive(const float* A, const float* B, float* C, unsigned const int M, unsigned const int N, unsigned const K){
 	for(int i = 0; i < M;++i)
 		for(int k = 0; k < K; ++k){
@@ -330,13 +135,6 @@ void benchmark_mat(  const std::size_t M,
   dim3 blockDim(block_size);
   //dim3 gridDim(ceil(0.5f*(float)N/(float)block_size), M);
   //dim3 blockDim(block_size,1);
-  float* AA, *BB, *CC;
-  AA = (float*) malloc(M*N*sizeof(float));
-  BB = (float*) malloc(N*K*sizeof(float));
-  CC = (float*) malloc(M*K*sizeof(float));
-  cudaMemcpy(AA,  A, M *N* sizeof(float), cudaMemcpyDeviceToHost);  
-  cudaMemcpy(BB,  B, N *K* sizeof(float), cudaMemcpyDeviceToHost);  
-  cudaMemcpy(CC,  C, M *K* sizeof(float), cudaMemcpyDeviceToHost);  
 
   const unsigned int n_tests = 20;
   const unsigned int n_repeat = 20;
@@ -353,8 +151,7 @@ void benchmark_mat(  const std::size_t M,
 		if(K > 1){
 			matmat<block_size><<<gridDim, blockDim>>>(A, B, C, M, N, K);
 		}else{
-//            matvec<block_size><<<gridDim, blockDim>>>(A, B, C, M, N);
-            matmat_naiveT(AA, BB, CC, M, N, 1);
+            matvec<block_size><<<gridDim, blockDim>>>(A, B, C, M, N);
 		}
 //	    errorCode = cudaGetLastError();
 //	    AssertCuda(errorCode);
@@ -373,8 +170,8 @@ void benchmark_mat(  const std::size_t M,
       avg += time / n_repeat;
     }
 
-//  errorCode = cudaMemcpy(result_host.data(),  C, M *K* sizeof(float), cudaMemcpyDeviceToHost);  
-//  AssertCuda(errorCode);
+  errorCode = cudaMemcpy(result_host.data(),  C, M *K* sizeof(float), cudaMemcpyDeviceToHost);  
+  AssertCuda(errorCode);
 
  //Printing for checking correctness
 /* for(unsigned int i = 0; i <M*K;++i){
@@ -391,9 +188,6 @@ void benchmark_mat(  const std::size_t M,
   AssertCuda(errorCode);
   errorCode = cudaFree(C);
   AssertCuda(errorCode);
-  free(AA);
-  free(BB);
-  free(CC);
   std::cout << "MATMUL (GPU) of size (M,N,K) " << std::setw(8) << M << "  " << N << " " << K 
             << " : min/avg/max: " << std::setw(11) << best << " "
             << std::setw(11) << avg / n_tests << " " << std::setw(11) << worst
